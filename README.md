@@ -48,15 +48,3 @@ python -m http.server 8000
 
 - Para trocar o logo ou imagens, substitua os arquivos na pasta `img/` e atualize as referências em `index.html`.
 - Para alterar cores e tipografia, edite `style.css`.
-
-## Contribuição
-
-Contribuições são bem-vindas — abra uma issue ou envie um pull request com melhorias visuais, correções ou novas páginas.
-
-## Licença
-
-Sinta-se livre para usar este código como base para aprendizado e projetos pessoais. Se desejar uma licença específica, adicione um arquivo `LICENSE` com a licença escolhida.
-
----
-
-Criado com ❤️ para aprendizado e demonstração.
