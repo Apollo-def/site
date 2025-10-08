@@ -1,0 +1,175 @@
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: #f5f5f5; /* Fundo cinza claro */
+  color: #1b1b1b;
+}
+
+/* Remove sublinhado dos links */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ====================================================
+   CABEÇALHO
+   ==================================================== */
+.header {
+  background-color: #001b71; /* Azul Senac */
+  color: #fff;
+  padding: 10px 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* Logotipo */
+.logo {
+  width: 130px;
+}
+
+/* Menu de navegação */
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 30px;
+}
+
+nav ul li a {
+  color: white;
+  font-weight: bold;
+  transition: color 0.3s;
+}
+
+/* Efeito hover nos links do menu */
+nav ul li a:hover {
+  color: #f7a300; /* Laranja Senac */
+}
+
+/* ====================================================
+   BANNER
+   ==================================================== */
+.banner img {
+  width: 100%; /* Ocupa toda a largura */
+  height: auto;
+  display: block;
+}
+
+/* ====================================================
+   DESTAQUES
+   ==================================================== */
+.destaques {
+  padding: 60px 20px;
+  text-align: center;
+  background-color: white;
+}
+
+.destaques h2 {
+  color: #001b71;
+  margin-bottom: 40px;
+  font-size: 1.8em;
+}
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 40px;
+}
+
+.card {
+  background-color: #fff;
+  border: 2px solid #eee;
+  border-radius: 10px;
+  width: 280px;
+  padding: 15px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+/* Efeito ao passar o mouse */
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.card img {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.card p {
+  margin-top: 10px;
+  font-weight: bold;
+  color: #001b71;
+}
+
+.sobre {
+  background-color: #f5f5f5;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.sobre h2 {
+  color: #001b71;
+  margin-bottom: 20px;
+}
+
+.sobre p {
+  max-width: 700px;
+  margin: auto;
+  line-height: 1.6em;
+}
+
+
+.contato {
+  background-color: #001b71;
+  color: white;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.contato strong {
+  color: #f7a300; /* Laranja Senac */
+}
+
+
+.footer {
+  background-color: #001b71;
+  color: white;
+  text-align: center;
+  padding: 15px 0;
+  font-size: 0.9em;
+}
+
+
+@media (max-width: 768px) {
+  .header-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  nav ul {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .cards {
+    flex-direction: column;
+    align-items: center;
+  }
+}
