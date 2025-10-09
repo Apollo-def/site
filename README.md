@@ -44,6 +44,16 @@ python -m http.server 8000
 # depois abra: http://localhost:8000
 ```
 
+### Testando a demo JavaScript + DOM
+
+1. Abra `index.html` no navegador (duplo clique) ou rode o servidor local com Python como acima e acesse `http://localhost:8000`.
+2. Role até a seção "Demo: JavaScript + DOM".
+3. No campo "Novo item" digite um texto e clique em "Adicionar" ou pressione Enter. O item aparecerá na lista e ficará salvo no LocalStorage.
+4. Use o botão "Remover" ao lado de cada item para apagá-lo. Clique em "Limpar lista" para remover todos os itens (há confirmação).
+5. Abra as ferramentas do desenvolvedor (F12) e veja o console para depurar se necessário.
+
+Observação: o demo foi criado para fins didáticos e demonstra conceitos como seletores, eventos, manipulação de DOM, criação dinâmica de elementos e armazenamento local (LocalStorage).
+
 ## Personalização rápida
 
 - Para trocar o logo ou imagens, substitua os arquivos na pasta `img/` e atualize as referências em `index.html`.

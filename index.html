@@ -7,14 +7,10 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- CABEÇALHO FIXO (MENU SUPERIOR) -->
+  <!-- 🔷 CABEÇALHO FIXO COM NAVEGAÇÃO -->
   <header class="header">
     <div class="header-container">
-
-      <!-- Logotipo à esquerda -->
       <img src="img/logo.png" alt="Logo Senac" class="logo">
-      
-      <!-- Navegação à direita -->
       <nav>
         <ul>
           <li><a href="#trabalhe">Trabalhe Conosco</a></li>
@@ -24,48 +20,91 @@
     </div>
   </header>
 
-  <!-- BANNER PRINCIPAL -->
+  <!-- 🔷 BANNER PRINCIPAL -->
   <section class="banner">
-    <!-- Imagem de destaque ocupando toda a largura -->
     <img src="img/banner.jpg" alt="Banner principal Senac">
   </section>
 
-  <!-- SEÇÃO DE DESTAQUES -->
+  <!-- 🔷 SEÇÃO INTRO COM BOTÃO "Saiba Mais" -->
+  <section class="intro">
+    <h1 id="main-title">Bem-vindo ao Senac Maranhão</h1>
+    <button id="saiba-mais-btn">Saiba Mais</button>
+  </section>
+
+  <!-- 🔷 SEÇÃO SOBRE -->
+  <section id="sobre" class="sobre">
+    <div class="container">
+      <h2 class="section-title">Sobre o Senac Maranhão</h2>
+      <p class="section-intro">
+        O Senac Maranhão é referência em educação profissional, atuando há décadas na formação de talentos para o mercado de trabalho.
+      </p>
+
+      <div class="sobre-grid">
+        <div class="sobre-item">
+          <h3>📚 Nossa História</h3>
+          <p>Desde 1946, o Senac promove educação voltada ao comércio de bens, serviços e turismo. No Maranhão, é reconhecido pela qualidade dos cursos e infraestrutura de ponta.</p>
+        </div>
+
+        <div class="sobre-item">
+          <h3>🎯 Missão</h3>
+          <p>Promover a educação profissional para o desenvolvimento de pessoas e organizações, contribuindo para uma sociedade mais justa e igualitária.</p>
+        </div>
+
+        <div class="sobre-item">
+          <h3>👁️ Visão</h3>
+          <p>Ser reconhecido como a principal instituição de educação profissional do Maranhão, pela qualidade, inovação e impacto social.</p>
+        </div>
+
+        <div class="sobre-item">
+          <h3>💡 Valores</h3>
+          <ul>
+            <li>Ética e transparência</li>
+            <li>Excelência educacional</li>
+            <li>Inovação</li>
+            <li>Inclusão e sustentabilidade</li>
+            <li>Comprometimento com o cliente e parceiros</li>
+          </ul>
+        </div>
+
+        <div class="sobre-item">
+          <h3>🏫 Unidades</h3>
+          <p>Presente em São Luís, Imperatriz, Caxias, Bacabal, Santa Inês e outras cidades, além de unidades móveis que levam educação a todo o estado.</p>
+        </div>
+
+        <div class="sobre-item">
+          <h3>🤝 Parcerias</h3>
+          <p>O Senac mantém parcerias com empresas, instituições de ensino e órgãos públicos para ampliar a oferta de cursos e programas educacionais.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 🔷 SEÇÃO DE DESTAQUES COM BUSCA E CARDS -->
   <main>
     <section id="destaques" class="destaques">
       <h2>Cursos do Senac Maranhão:</h2>
-      <div class="cards">
-        <div class="card">
-          <img src="img/03.png" alt="Curso 1">
-          <p>Curso de Gastronomia</p>
-        </div>
-        <div class="card">
-          <img src="img/04.png" alt="Curso 2">
-          <p>Curso de Moda e Design</p>
-        </div>
-        <div class="card">
-          <img src="img/03.jpg" alt="Curso 3">
-          <p>Curso de Tecnologia</p>
-        </div>
+
+      <!-- 🔍 Campo de busca -->
+      <input type="text" id="busca-curso" placeholder="Pesquisar curso..." />
+
+      <!-- ➕ Botão para adicionar novo curso -->
+      <button id="add-produto-btn">Adicionar Produto</button>
+
+      <!-- 🧩 Cards dinâmicos -->
+      <div class="cards" id="cards-container">
+        <!-- Os cursos serão inseridos aqui via JavaScript -->
       </div>
-    </section>
-
-    <!-- SEÇÃO SOBRE NÓS-->
-    <section id="sobre" class="sobre">
-      <h2>Sobre o Senac</h2>
-      <p>O Senac é referência em educação profissional no Brasil, formando talentos e preparando profissionais para o mercado de trabalho.</p>
-    </section>
-
-    <!-- SEÇÃO DE CONTATO -->
-    <section id="contato" class="contato">
-      <h2>Contato</h2>
-      <p>Entre em contato conosco pelo e-mail: <strong>contato@senac.com.br</strong></p>
     </section>
   </main>
 
-  <!-- RODAPÉ -->
-  <footer class="footer">
+  <!-- 🔷 RODAPÉ -->
+  <footer class="footer" id="contato">
+    <h2>Contato</h2>
+    <p>Entre em contato conosco pelo e-mail: <strong>contato@senac.com.br</strong></p>
     <p>© 2025 Senac - Todos os direitos reservados.</p>
   </footer>
+
+  <!-- 🔷 SCRIPTS -->
+  <script src="script.js"></script>
 </body>
 </html>
