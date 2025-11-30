@@ -1,135 +1,157 @@
-// 🔗 Elementos da interface
-const cardsContainer = document.getElementById('cards-container');
-const saibaMaisBtn = document.getElementById('saiba-mais-btn');
-const mainTitle = document.getElementById('main-title');
-const addProdutoBtn = document.getElementById('add-produto-btn');
-const buscaInput = document.getElementById('busca-curso');
-
-// 🌙 Botão modo escuro (adicionado dinamicamente)
-const modoEscuroBtn = document.createElement('button');
-modoEscuroBtn.id = 'modo-escuro-btn';
-modoEscuroBtn.textContent = 'Alternar Tema';
-document.querySelector('.intro').appendChild(modoEscuroBtn);
-
-
-
-// 🧩 Cursos locais salvos no projeto
-const cursosLocais = [
+// Dados dos cursos
+const cursos = [
   {
-    titulo: "Curso de Gastronomia",
-    descricao: "Aprenda técnicas culinárias com chefs renomados.",
-    imagem: "img/03.png"
+    titulo: "Administração",
+    descricao: "Curso completo de Administração com foco em gestão empresarial, liderança e empreendedorismo.",
+    imagem: "img/03.jpg",
+    link: "#"
   },
   {
-    titulo: "Curso de Moda e Design",
-    descricao: "Desenvolva coleções e aprenda sobre tendências.",
-    imagem: "img/04.png"
+    titulo: "Comunicação",
+    descricao: "Aprenda técnicas avançadas de comunicação eficaz para o mercado de trabalho e mídias digitais.",
+    imagem: "img/comunicacao.jpg",
+    link: "#"
   },
   {
-    titulo: "Curso de Tecnologia",
-    descricao: "Domine ferramentas digitais e programação.",
-    imagem: "img/03.jpg"
+    titulo: "Inglês",
+    descricao: "Domine o idioma inglês com professores nativos e metodologias modernas para oportunidades globais.",
+    imagem: "img/ingles.jpg",
+    link: "#"
+  },
+  {
+    titulo: "Sustentabilidade",
+    descricao: "Cursos sobre práticas sustentáveis, responsabilidade ambiental e desenvolvimento sustentável.",
+    imagem: "img/sustentavel.jpg",
+    link: "#"
   }
 ];
 
-// ➕ Cursos extras para adicionar manualmente
-const cursosExtras = [
-  {
-    titulo: "Curso de Fotografia Criativa",
-    descricao: "Capture momentos com técnica e arte.",
-    imagem: "img/foto.jpg"
-  },
-  {
-    titulo: "Curso de Comunicação Corporativa",
-    descricao: "Aprenda a se comunicar com impacto no ambiente profissional.",
-    imagem: "img/comunicacao.jpg"
-  },
-  {
-    titulo: "Curso de Ciências Naturais e Sustentabilidade",
-    descricao: "Explore o meio ambiente e práticas sustentáveis.",
-    imagem: "img/sustentavel.jpg"
-  }
-];
+// Renderizar cards
+function renderizarCards(filtrados = cursos) {
+  const container = document.getElementById('cards-container');
+  container.innerHTML = '';
 
-// 🧱 Cria card de curso
-function criarCard(curso) {
-  const card = document.createElement('div');
-  card.classList.add('card', 'fade-in'); // 🧩 animação de entrada
-  card.innerHTML = `
-    <img src="${curso.imagem}" alt="${curso.titulo}">
-    <p><strong>${curso.titulo}</strong></p>
-    <p>${curso.descricao || ''}</p>
-    <button class="ver-mais-btn">Ver Mais</button>
-  `;
-  // 2️⃣ Exibe nome do produto ao clicar
-  card.querySelector('.ver-mais-btn').addEventListener('click', () => {
-    alert(`Curso: ${curso.titulo}`);
+  filtrados.forEach((curso, index) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    card.innerHTML = `
+      <img src="${curso.imagem}" alt="${curso.titulo}">
+      <div class="card-content">
+        <h3>${curso.titulo}</h3>
+        <p>${curso.descricao}</p>
+        <button class="ver-mais-btn" data-index="${index}">Ver Mais</button>
+      </div>
+    `;
+
+    container.appendChild(card);
   });
-  cardsContainer.appendChild(card);
 }
 
-// 🔄 Renderiza cursos locais
-function carregarCursosLocais() {
-  cursosLocais.forEach(curso => criarCard(curso));
+// Busca com debounce
+let debounceTimer;
+function buscarCursos() {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    const termo = document.getElementById('busca-curso').value.toLowerCase();
+    const filtrados = cursos.filter(curso =>
+      curso.titulo.toLowerCase().includes(termo) ||
+      curso.descricao.toLowerCase().includes(termo)
+    );
+    renderizarCards(filtrados);
+  }, 300);
 }
 
-// 🔄 Carrega cursos da API (opcional)
-async function carregarCursosDaAPI() {
-  try {
-    const resposta = await fetch(API_URL);
-    const cursos = await resposta.json();
-    cursos.forEach(curso => {
-      criarCard({
-        titulo: curso.title,
-        descricao: "Curso externo",
-        imagem: curso.thumbnailUrl
-      });
+// Modal para detalhes do curso
+function abrirModalCurso(index) {
+  const curso = cursos[index];
+  document.getElementById('modal-title').textContent = curso.titulo;
+  document.getElementById('modal-desc').textContent = curso.descricao;
+  document.getElementById('course-modal').style.display = 'block';
+}
+
+// Modal para adicionar curso
+function abrirModalAdd() {
+  document.getElementById('add-modal').style.display = 'block';
+}
+
+// Fechar modais
+function fecharModal() {
+  document.getElementById('course-modal').style.display = 'none';
+  document.getElementById('add-modal').style.display = 'none';
+}
+
+// Adicionar novo curso
+function adicionarCurso(event) {
+  event.preventDefault();
+  const form = event.target;
+  const titulo = form[0].value;
+  const descricao = form[1].value;
+  const imagem = form[2].value;
+
+  cursos.push({ titulo, descricao, imagem, link: "#" });
+  renderizarCards();
+  fecharModal();
+  form.reset();
+}
+
+// Smooth scroll para navegação
+function smoothScroll(target) {
+  const element = document.querySelector(target);
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+// Menu mobile
+function toggleMobileMenu() {
+  const nav = document.querySelector('.nav ul');
+  nav.style.display = nav.style.display === 'flex' ? 'none' : 'flex';
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', () => {
+  renderizarCards();
+
+  document.getElementById('busca-curso').addEventListener('input', buscarCursos);
+
+  document.getElementById('add-curso-btn').addEventListener('click', abrirModalAdd);
+
+  document.getElementById('saiba-mais-btn').addEventListener('click', () => {
+    smoothScroll('#sobre');
+  });
+
+  // Delegação de eventos para botões "Ver Mais"
+  document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('ver-mais-btn')) {
+      const index = e.target.getAttribute('data-index');
+      abrirModalCurso(index);
+    }
+  });
+
+  // Fechar modais
+  document.querySelectorAll('.close').forEach(closeBtn => {
+    closeBtn.addEventListener('click', fecharModal);
+  });
+
+  window.addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal')) {
+      fecharModal();
+    }
+  });
+
+  // Formulário adicionar curso
+  document.getElementById('add-form').addEventListener('submit', adicionarCurso);
+
+  // Navegação
+  document.querySelectorAll('.nav a').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = link.getAttribute('href');
+      smoothScroll(target);
     });
-  } catch (erro) {
-    console.error('Erro ao carregar cursos da API:', erro);
-  }
-}
-
-// 1️⃣ Interação com botão "Saiba Mais"
-saibaMaisBtn.addEventListener('click', () => {
-  mainTitle.textContent = 'Explore os cursos incríveis do Senac!';
-  mainTitle.style.color = '#f7a300';
-  saibaMaisBtn.textContent = 'Explorar';
-});
-
-// 3️⃣ Adiciona curso aleatório ao clicar
-addProdutoBtn.addEventListener('click', () => {
-  const cursoAleatorio = cursosExtras[Math.floor(Math.random() * cursosExtras.length)];
-  criarCard(cursoAleatorio);
-});
-
-// 🔍 Busca por curso
-buscaInput.addEventListener('input', (e) => {
-  const termo = e.target.value.toLowerCase();
-  const cards = document.querySelectorAll('.card');
-  cards.forEach(card => {
-    const titulo = card.querySelector('p').textContent.toLowerCase();
-    card.style.display = titulo.includes(termo) ? 'block' : 'none';
   });
-});
 
-// 4️⃣ Modo escuro com persistência
-function aplicarTemaSalvo() {
-  const tema = localStorage.getItem('tema');
-  if (tema === 'escuro') {
-    document.body.classList.add('dark-mode');
-  }
-}
-
-modoEscuroBtn.addEventListener('click', () => {
-  document.body.classList.toggle('dark-mode');
-  const temaAtual = document.body.classList.contains('dark-mode') ? 'escuro' : 'claro';
-  localStorage.setItem('tema', temaAtual);
-});
-
-// 🚀 Inicializa tudo ao carregar a página
-window.addEventListener('DOMContentLoaded', () => {
-  aplicarTemaSalvo();
-  carregarCursosLocais();
-  carregarCursosDaAPI();
+  // Menu mobile
+  document.querySelector('.mobile-menu').addEventListener('click', toggleMobileMenu);
 });

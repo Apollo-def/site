@@ -3,108 +3,176 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Senac - Página Institucional</title>
+  <title>Senac Maranhão - Educação Profissional de Qualidade</title>
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-  <!-- 🔷 CABEÇALHO FIXO COM NAVEGAÇÃO -->
+  <!-- Header -->
   <header class="header">
     <div class="header-container">
-      <img src="img/logo.png" alt="Logo Senac" class="logo">
-      <nav>
+      <div class="logo-section">
+        <img src="img/logo.png" alt="Logo Senac Maranhão" class="logo">
+        <span class="senac-title">Senac Maranhão</span>
+      </div>
+      <nav class="nav">
         <ul>
+          <li><a href="#sobre">Sobre</a></li>
+          <li><a href="#cursos">Cursos</a></li>
+          <li><a href="#depoimentos">Depoimentos</a></li>
           <li><a href="#trabalhe">Trabalhe Conosco</a></li>
           <li><a href="#contato">Contato</a></li>
         </ul>
       </nav>
+      <div class="mobile-menu">
+        <i class="fas fa-bars"></i>
+      </div>
     </div>
   </header>
 
-  <!-- 🔷 BANNER PRINCIPAL -->
-  <section class="banner">
-    <img src="img/banner.jpg" alt="Banner principal Senac">
+  <!-- Hero Banner -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Bem-vindo ao Senac Maranhão</h1>
+      <p>Referência em educação profissional, formando talentos para o futuro do Maranhão.</p>
+      <button class="cta-btn" id="saiba-mais-btn">Saiba Mais</button>
+    </div>
+    <img src="img/banner.jpg" alt="Banner Senac Maranhão" class="hero-image">
   </section>
 
-  <!-- 🔷 SEÇÃO INTRO COM BOTÃO "Saiba Mais" -->
-  <section class="intro">
-    <h1 id="main-title">Bem-vindo ao Senac Maranhão</h1>
-    <button id="saiba-mais-btn">Saiba Mais</button>
-  </section>
-
-  <!-- 🔷 SEÇÃO SOBRE -->
+  <!-- Sobre Section -->
   <section id="sobre" class="sobre">
     <div class="container">
       <h2 class="section-title">Sobre o Senac Maranhão</h2>
-      <p class="section-intro">
-        O Senac Maranhão é referência em educação profissional, atuando há décadas na formação de talentos para o mercado de trabalho.
-      </p>
-
+      <p class="section-intro">Há décadas, promovemos a educação profissional de excelência, contribuindo para o desenvolvimento sustentável do estado.</p>
       <div class="sobre-grid">
         <div class="sobre-item">
-          <h3>📚 Nossa História</h3>
-          <p>Desde 1946, o Senac promove educação voltada ao comércio de bens, serviços e turismo. No Maranhão, é reconhecido pela qualidade dos cursos e infraestrutura de ponta.</p>
+          <i class="fas fa-history"></i>
+          <h3>Nossa História</h3>
+          <p>Fundado em 1946, o Senac é pioneiro na formação para o comércio, serviços e turismo, com presença forte no Maranhão.</p>
         </div>
-
         <div class="sobre-item">
-          <h3>🎯 Missão</h3>
-          <p>Promover a educação profissional para o desenvolvimento de pessoas e organizações, contribuindo para uma sociedade mais justa e igualitária.</p>
+          <i class="fas fa-bullseye"></i>
+          <h3>Missão</h3>
+          <p>Desenvolver pessoas e organizações por meio da educação, promovendo justiça social e igualdade.</p>
         </div>
-
         <div class="sobre-item">
-          <h3>👁️ Visão</h3>
-          <p>Ser reconhecido como a principal instituição de educação profissional do Maranhão, pela qualidade, inovação e impacto social.</p>
+          <i class="fas fa-eye"></i>
+          <h3>Visão</h3>
+          <p>Ser a principal instituição de educação profissional do Maranhão, reconhecida por inovação e impacto.</p>
         </div>
-
         <div class="sobre-item">
-          <h3>💡 Valores</h3>
+          <i class="fas fa-lightbulb"></i>
+          <h3>Valores</h3>
           <ul>
             <li>Ética e transparência</li>
             <li>Excelência educacional</li>
             <li>Inovação</li>
             <li>Inclusão e sustentabilidade</li>
-            <li>Comprometimento com o cliente e parceiros</li>
           </ul>
         </div>
-
         <div class="sobre-item">
-          <h3>🏫 Unidades</h3>
-          <p>Presente em São Luís, Imperatriz, Caxias, Bacabal, Santa Inês e outras cidades, além de unidades móveis que levam educação a todo o estado.</p>
+          <i class="fas fa-school"></i>
+          <h3>Unidades</h3>
+          <p>De São Luís a Imperatriz, com unidades móveis para levar educação a todo o estado.</p>
         </div>
-
         <div class="sobre-item">
-          <h3>🤝 Parcerias</h3>
-          <p>O Senac mantém parcerias com empresas, instituições de ensino e órgãos públicos para ampliar a oferta de cursos e programas educacionais.</p>
+          <i class="fas fa-handshake"></i>
+          <h3>Parcerias</h3>
+          <p>Colaborações com empresas e órgãos públicos para ampliar oportunidades educacionais.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 🔷 SEÇÃO DE DESTAQUES COM BUSCA E CARDS -->
-  <main>
-    <section id="destaques" class="destaques">
-      <h2>Cursos do Senac Maranhão:</h2>
-
-      <!-- 🔍 Campo de busca -->
-      <input type="text" id="busca-curso" placeholder="Pesquisar curso..." />
-
-      <!-- ➕ Botão para adicionar novo curso -->
-      <button id="add-produto-btn">Adicionar Produto</button>
-
-      <!-- 🧩 Cards dinâmicos -->
-      <div class="cards" id="cards-container">
-        <!-- Os cursos serão inseridos aqui via JavaScript -->
+  <!-- Cursos Section -->
+  <section id="cursos" class="cursos">
+    <div class="container">
+      <h2 class="section-title">Nossos Cursos</h2>
+      <div class="search-add">
+        <input type="text" id="busca-curso" placeholder="Pesquisar cursos...">
+        <button id="add-curso-btn" class="add-btn">Adicionar Curso</button>
       </div>
-    </section>
-  </main>
+      <div class="cards-grid" id="cards-container">
+        <!-- Cards gerados via JS -->
+      </div>
+    </div>
+  </section>
 
-  <!-- 🔷 RODAPÉ -->
-  <footer class="footer" id="contato">
-    <h2>Contato</h2>
-    <p>Entre em contato conosco pelo e-mail: <strong>contato@senac.com.br</strong></p>
-    <p>© 2025 Senac - Todos os direitos reservados.</p>
+  <!-- Depoimentos Section -->
+  <section id="depoimentos" class="depoimentos">
+    <div class="container">
+      <h2 class="section-title">Depoimentos</h2>
+      <div class="depoimentos-grid">
+        <div class="depoimento">
+          <p>"O Senac transformou minha carreira! Hoje sou gerente graças ao curso de Administração."</p>
+          <span>- Maria Silva</span>
+        </div>
+        <div class="depoimento">
+          <p>"Excelente estrutura e professores qualificados. Recomendo o curso de Inglês."</p>
+          <span>- João Santos</span>
+        </div>
+        <div class="depoimento">
+          <p>"Aprendi práticas sustentáveis que aplico no meu negócio familiar."</p>
+          <span>- Ana Oliveira</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer id="contato" class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Contato</h3>
+          <p>Email: <a href="mailto:contato@senac.ma.gov.br">contato@senac.ma.gov.br</a></p>
+          <p>Telefone: (98) 99999-9999</p>
+        </div>
+        <div class="footer-section">
+          <h3>Trabalhe Conosco</h3>
+          <p>Envie seu currículo para <a href="mailto:trabalhe@senac.ma.gov.br">trabalhe@senac.ma.gov.br</a></p>
+        </div>
+        <div class="footer-section">
+          <h3>Redes Sociais</h3>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-facebook"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-linkedin"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 Senac Maranhão. Todos os direitos reservados.</p>
+      </div>
+    </div>
   </footer>
 
-  <!-- 🔷 SCRIPTS -->
+  <!-- Modal for Course Details -->
+  <div id="course-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2 id="modal-title"></h2>
+      <p id="modal-desc"></p>
+      <button class="cta-btn">Inscrever-se</button>
+    </div>
+  </div>
+
+  <!-- Modal for Add Course -->
+  <div id="add-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Adicionar Novo Curso</h2>
+      <form id="add-form">
+        <input type="text" placeholder="Título do Curso" required>
+        <textarea placeholder="Descrição" required></textarea>
+        <input type="text" placeholder="URL da Imagem" required>
+        <button type="submit">Adicionar</button>
+      </form>
+    </div>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>
