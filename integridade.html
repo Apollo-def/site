@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Integridade - Grupo Global</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-container">
+      <div class="logo-section">
+        <img src="img/logo.png" alt="Logo Grupo Global" class="logo">
+        <span class="senac-title">Grupo Global</span>
+      </div>
+      <nav class="nav">
+        <ul>
+          <li><a href="index.html">Início</a></li>
+          <li><a href="sobre.html">Sobre</a></li>
+          <li><a href="integridade.html">Integridade</a></li>
+          <li><a href="governanca.html">Governança</a></li>
+          <li><a href="stakeholders.html">Stakeholders</a></li>
+          <li><a href="estrategia.html">Estratégia</a></li>
+          <li><a href="contato.html">Contato</a></li>
+        </ul>
+      </nav>
+      <div class="mobile-menu">
+        <i class="fas fa-bars"></i>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero for Integridade -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Sistema de Integridade e Compliance</h1>
+      <p>Código de conduta, políticas anticorrupção, treinamentos e monitoramento contínuo para garantir ética corporativa.</p>
+    </div>
+  </section>
+
+  <!-- Integridade Content -->
+  <section class="integridade">
+    <div class="container">
+      <h2 class="section-title">Estrutura do Compliance</h2>
+      <p class="section-intro">Sistema abrangente para promover integridade, prevenir irregularidades e garantir conformidade com leis e regulamentos.</p>
+      
+      <div class="integridade-info">
+        <div class="info-item">
+          <i class="fas fa-book"></i>
+          <h3>Código de Conduta e Ética</h3>
+          <p>Princípios fundamentais que guiam o comportamento de todos os colaboradores e parceiros.</p>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-gavel"></i>
+          <h3>Políticas Anticorrupção</h3>
+          <p>Medidas preventivas contra práticas corruptas, alinhadas à legislação brasileira.</p>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-graduation-cap"></i>
+          <h3>Programas de Treinamento</h3>
+          <p>Capacitação contínua em ética, compliance e boas práticas corporativas.</p>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-eye"></i>
+          <h3>Monitoramento Contínuo</h3>
+          <p>Sistema de vigilância para identificar e mitigar riscos de não conformidade.</p>
+        </div>
+      </div>
+
+      <div class="tipos-denuncias">
+        <h3>Canal de Denúncias</h3>
+        <p>Sistema seguro para reportar irregularidades de forma anônima e confidencial.</p>
+        <ul>
+          <li>Violações éticas e de conduta</li>
+          <li>Assédio moral ou sexual</li>
+          <li>Fraudes e irregularidades financeiras</li>
+          <li>Corrupção e conflitos de interesse</li>
+          <li>Outras infrações à legislação</li>
+        </ul>
+      </div>
+
+      <!-- Formulário de Denúncia -->
+      <div class="form-section">
+        <h3>Reportar Irregularidade</h3>
+        <p class="form-note">Preencha o formulário abaixo. O anonimato é opcional; você pode fornecer contatos se desejar acompanhamento.</p>
+        <form id="denuncia-form">
+          <textarea placeholder="Descreva a irregularidade em detalhes (o que aconteceu, quando, envolvidos, etc.)" rows="6" required></textarea>
+          <select name="tipo" required>
+            <option value="">Selecione o tipo de denúncia</option>
+            <option value="etica">Violações éticas</option>
+            <option value="assedio">Assédio</option>
+            <option value="fraude">Fraudes</option>
+            <option value="corrupcao">Corrupção</option>
+            <option value="outros">Outros</option>
+          </select>
+          <div class="optional-fields">
+            <input type="text" placeholder="Nome (opcional)" >
+            <input type="email" placeholder="Email (opcional)">
+            <input type="tel" placeholder="Telefone (opcional)">
+          </div>
+          <button type="submit" class="cta-btn">Enviar Denúncia</button>
+        </form>
+        <p class="legal-note">Alinhado à Lei 12.846/13 (Lei Anticorrupção). Todas as denúncias serão investigadas de forma imparcial.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Contato</h3>
+          <p>Email: <a href="mailto:contato@grupoglobal.com.br">contato@grupoglobal.com.br</a></p>
+          <p>Telefone: (11) 99999-9999</p>
+        </div>
+        <div class="footer-section">
+          <h3>Grupo Global</h3>
+          <p>Excelência em governança e integridade corporativa.</p>
+        </div>
+        <div class="footer-section">
+          <h3>Redes Sociais</h3>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-facebook"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-linkedin"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 Grupo Global. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
