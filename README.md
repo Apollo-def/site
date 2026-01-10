@@ -1,31 +1,30 @@
-# Site (Portfólio / Landing Page)
+# Grupo Global - Portal Institucional
 
-Um site simples estático com layout responsivo, imagens e estilo próprio. Este repositório contém os arquivos HTML, CSS e as imagens usadas pelo site.
+Site institucional responsivo do Grupo Global, uma organização comprometida com a excelência, ética e transparência corporativa. O site apresenta informações sobre governança, integridade, stakeholders e estratégia da empresa.
 
 ## Sobre
 
-Este pequeno projeto é uma landing page estática construída com HTML e CSS. É ideal como exercício ou base para projetos front-end iniciais. O objetivo é demonstrar estrutura de projeto, uso de imagens e estilização básica.
+Este projeto é um portal institucional moderno construído com HTML, CSS e JavaScript. Apresenta uma experiência de usuário profissional com navegação suave, animações, validação de formulários e design responsivo.
+
+## Funcionalidades
+
+- **Design Responsivo**: Layout adaptável para desktop, tablet e mobile
+- **Navegação Suave**: Rolagem automática entre seções
+- **Animações**: Efeitos de entrada e hover para melhor experiência
+- **Formulários Interativos**: Validação em tempo real e estados de carregamento
+- **Botão "Voltar ao Topo"**: Navegação rápida para o início da página
+- **Sistema de Integridade**: Canal de denúncias anônimo
+- **Menu Mobile**: Navegação otimizada para dispositivos móveis
 
 ## Estrutura do projeto
 
-Arquivos e pastas principais:
+Arquivos principais:
 
-- `index.html` — arquivo HTML principal (página inicial).
-- `style.css` — estilos CSS para o layout e responsividade.
-- `img/` — pasta com imagens usadas no site (banners, logos, ilustrações).
-
-Exemplo do conteúdo da pasta:
-
-```
-index.html
-style.css
-img/
-	banner.jpg
-	logo.png
-	03.jpg
-	03.png
-	04.png
-```
+- `index.html` — Página única com todas as seções do site
+- `style.css` — Estilos CSS modernos com variáveis CSS
+- `script.js` — JavaScript para interatividade e funcionalidades
+- `img/` — Pasta com imagens (banners, logos, etc.)
+- `TODO.md` — Lista de tarefas e melhorias implementadas
 
 ## Como visualizar (localmente)
 
@@ -33,7 +32,7 @@ img/
 2. Abra a pasta do projeto.
 3. Abra o arquivo `index.html` em um navegador (duplo clique ou botão direito → Abrir com).
 
-Ou, para uma experiência um pouco melhor (servidor local simples):
+Ou, para uma experiência completa com servidor local:
 
 - No Windows com PowerShell, execute:
 
@@ -44,17 +43,27 @@ python -m http.server 8000
 # depois abra: http://localhost:8000
 ```
 
-### Testando a demo JavaScript + DOM
+## Seções do Site
 
-1. Abra `index.html` no navegador (duplo clique) ou rode o servidor local com Python como acima e acesse `http://localhost:8000`.
-2. Role até a seção "Demo: JavaScript + DOM".
-3. No campo "Novo item" digite um texto e clique em "Adicionar" ou pressione Enter. O item aparecerá na lista e ficará salvo no LocalStorage.
-4. Use o botão "Remover" ao lado de cada item para apagá-lo. Clique em "Limpar lista" para remover todos os itens (há confirmação).
-5. Abra as ferramentas do desenvolvedor (F12) e veja o console para depurar se necessário.
+1. **Hero**: Apresentação da empresa com chamada para ação
+2. **Sobre**: História, fundamentos e operações do Grupo Global
+3. **Sistema de Integridade**: Código de conduta, políticas e canal de denúncias
+4. **Governança Corporativa**: Estrutura de controles e gestão de riscos
+5. **Relacionamento com Stakeholders**: Canais de comunicação com públicos diversos
+6. **Análise Estratégica**: Pilares estratégicos e diferenciais competitivos
+7. **Contato**: Informações de contato e formulário
 
-Observação: o demo foi criado para fins didáticos e demonstra conceitos como seletores, eventos, manipulação de DOM, criação dinâmica de elementos e armazenamento local (LocalStorage).
+## Tecnologias Utilizadas
 
-## Personalização rápida
+- **HTML5**: Estrutura semântica
+- **CSS3**: Flexbox, Grid, animações e variáveis CSS
+- **JavaScript**: Interatividade, validação de formulários e manipulação DOM
+- **Font Awesome**: Ícones vetoriais
+- **Google Fonts**: Tipografia Roboto
 
-- Para trocar o logo ou imagens, substitua os arquivos na pasta `img/` e atualize as referências em `index.html`.
-- Para alterar cores e tipografia, edite `style.css`.
+## Personalização
+
+- Para alterar cores e tema, edite as variáveis CSS em `style.css`
+- Para modificar conteúdo, edite as seções em `index.html`
+- Para adicionar funcionalidades, modifique `script.js`
+- Para trocar imagens, substitua os arquivos na pasta `img/`
