@@ -1,0 +1,40 @@
+{% extends "admin/base_site.html" %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Início</a> &rsaquo;
+  <a href="{% url 'admin:funcionarios_funcionario_changelist' %}">Funcionários</a> &rsaquo; Importar planilha
+</div>
+{% endblock %}
+{% block content %}
+<p>Colunas obrigatórias: <strong>Nome completo, Matrícula, CPF</strong>.
+   Opcionais: Data de nascimento, Cargo, Instalação, Escala, Telefone, Situação.
+   Se a matrícula já existir, o cadastro é atualizado.</p>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <input type="submit" value="Enviar">
+</form>
+
+{% if resultado %}
+  <h2>Resultado</h2>
+  {% if resultado.erro_geral %}
+    <p class="errornote">{{ resultado.erro_geral }}</p>
+  {% else %}
+    <p><strong>{{ resultado.resumo }}</strong></p>
+    {% if resultado.instalacoes_criadas %}
+      <p>Instalações novas: {{ resultado.instalacoes_criadas|join:", " }}</p>
+    {% endif %}
+    {% if resultado.erros %}
+      <table>
+        <thead><tr><th>Linha</th><th>Funcionário</th><th>Problema</th></tr></thead>
+        <tbody>
+        {% for linha, quem, erro in resultado.erros %}
+          <tr><td>{{ linha }}</td><td>{{ quem }}</td><td>{{ erro }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+  {% endif %}
+{% endif %}
+{% endblock %}

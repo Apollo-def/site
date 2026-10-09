@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+staticfiles/
+
+# Banco de dados e cópias (dados pessoais) nunca vão para o GitHub
+db.sqlite3*
+*.sqlite3
+*.sqlite3-*
+
+# Planilhas e arquivos com dados reais de funcionários (LGPD) nunca vão para o GitHub
+dados_rh/
+*.xls
+*.xlsx
+*.csv
+*.pdf

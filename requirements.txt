@@ -1,0 +1,6 @@
+# Dependências do Sistema TJMA (instale com: pip install -r requirements.txt)
+Django>=5.2,<6.0
+openpyxl>=3.1
+python-dotenv>=1.0
+whitenoise>=6.6
+dj-database-url>=2.1
