@@ -1,0 +1,32 @@
+{% extends "publico/base.html" %}
+{% block titulo %}Restaurar backup{% endblock %}
+
+{% block conteudo %}
+<section class="cartao">
+<h1>Restaurar backup</h1>
+{% if concluido %}
+  <div class="aviso aviso-ok">
+    Pronto! Os dados foram restaurados ({{ total }} arquivos). Esta tela foi desligada automaticamente.
+  </div>
+  <p class="suave">Agora apague a variável <strong>RESTAURAR_BACKUP_SENHA</strong> do servidor (arquivo .env).</p>
+{% else %}
+  <p class="suave">Envie o arquivo .zip gerado no computador com <code>python manage.py exportar_backup</code>.
+     Pode levar alguns minutos: não feche esta página.</p>
+  {% if erro %}<div class="aviso aviso-erro">{{ erro }}</div>{% endif %}
+  <form method="post" enctype="multipart/form-data"
+        onsubmit="this.querySelector('button').disabled=true; this.querySelector('button').textContent='Enviando e restaurando…';">
+    {% csrf_token %}
+    <div class="campo">
+      <label for="senha">Senha de restauração</label>
+      <input type="password" id="senha" name="senha" required autocomplete="off">
+      <div class="ajuda">A mesma da variável RESTAURAR_BACKUP_SENHA do servidor.</div>
+    </div>
+    <div class="campo">
+      <label for="arquivo">Arquivo do backup (.zip)</label>
+      <input type="file" id="arquivo" name="arquivo" accept=".zip" required>
+    </div>
+    <button type="submit" class="botao">Restaurar</button>
+  </form>
+{% endif %}
+</section>
+{% endblock %}

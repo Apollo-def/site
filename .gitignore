@@ -1,0 +1,30 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+db.sqlite3*
+db_testes.sqlite3*
+arquivos_privados/
+staticfiles/
+sessoes/
+
+# Planilhas com dados reais de funcionários (LGPD) nunca vão para o GitHub
+*.xls
+*.xlsx
+*.csv
+*.pdf
+!exemplos/planilha_teste_funcionarios.xlsx
+
+# Arquivos de trabalho do RH (PDFs, planilhas, backups do banco) — dados pessoais, nunca vão para o GitHub
+dados_rh/
+
+# Registros do servidor (podem conter IPs e CPFs digitados)
+logs/
+
+# Cópias do banco feitas à mão (dados pessoais)
+*.sqlite3
+*.sqlite3-*
+
+# Gateway do WhatsApp: dependências e a SESSÃO (chaves do WhatsApp conectado) nunca vão para o GitHub
+gateway-whatsapp/node_modules/
+gateway-whatsapp/sessao/

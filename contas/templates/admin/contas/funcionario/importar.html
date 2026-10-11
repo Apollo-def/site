@@ -1,0 +1,124 @@
+{% extends "admin/base_site.html" %}
+
+{% block extrastyle %}{{ block.super }}
+<style>
+  .imp-caixa { background: var(--darkened-bg); border: 1px solid var(--hairline-color); border-radius: 6px; padding: 16px; margin-bottom: 20px; }
+  .imp-cartoes { display: flex; flex-wrap: wrap; gap: 12px; margin: 12px 0 20px; }
+  .imp-cartao { flex: 1 1 140px; border-radius: 6px; padding: 12px 16px; border: 1px solid var(--hairline-color); background: var(--body-bg); }
+  .imp-cartao strong { display: block; font-size: 28px; line-height: 1.2; }
+  .imp-ok strong { color: #2e7d32; } .imp-atu strong { color: #1565c0; } .imp-erro strong { color: #c62828; }
+  .imp-aviso { padding: 12px 16px; border-radius: 6px; margin-bottom: 16px; font-weight: bold; }
+  .imp-simulacao { background: #fff3cd; color: #664d03; border: 1px solid #ffe69c; }
+  .imp-falha { background: #f8d7da; color: #842029; border: 1px solid #f5c2c7; }
+  .imp-sucesso { background: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
+  .imp-tabela { width: 100%; }
+  .imp-colunas li { margin: 2px 0; }
+  details summary { cursor: pointer; font-weight: bold; margin: 12px 0 8px; }
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Início</a>
+  &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+  &rsaquo; <a href="{% url 'admin:contas_funcionario_changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+  &rsaquo; Importar planilha
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+
+{% if resultado %}
+  <h2>Resultado da importação</h2>
+
+  {% if resultado.erro_geral %}
+    <div class="imp-aviso imp-falha">Não foi possível importar: {{ resultado.erro_geral }}</div>
+  {% else %}
+    {% if resultado.simulacao %}
+      <div class="imp-aviso imp-simulacao">SIMULAÇÃO — nada foi salvo. Se estiver tudo certo, envie o arquivo de novo com a opção “Somente conferir” desmarcada.</div>
+    {% elif not resultado.erros %}
+      <div class="imp-aviso imp-sucesso">Importação concluída sem erros.</div>
+    {% endif %}
+
+    <div class="imp-cartoes">
+      <div class="imp-cartao"><strong>{{ resultado.total_linhas }}</strong>linhas lidas</div>
+      <div class="imp-cartao imp-ok"><strong>{{ resultado.criados|length }}</strong>{% if resultado.simulacao %}seriam criados{% else %}criados{% endif %}</div>
+      <div class="imp-cartao imp-atu"><strong>{{ resultado.atualizados|length }}</strong>{% if resultado.simulacao %}seriam atualizados{% else %}atualizados{% endif %}</div>
+      <div class="imp-cartao"><strong>{{ resultado.sem_alteracao }}</strong>sem alteração</div>
+      <div class="imp-cartao imp-erro"><strong>{{ resultado.erros|length }}</strong>linhas com erro</div>
+    </div>
+
+    <p><small>Colunas reconhecidas: {{ resultado.colunas_reconhecidas|join:", " }}</small></p>
+    {% if resultado.contratos_associados %}
+      <p>Departamentos associados a contratos:</p>
+      <ul>{% for texto, sigla in resultado.contratos_associados.items %}<li>“{{ texto }}” → <strong>{{ sigla }}</strong></li>{% endfor %}</ul>
+    {% endif %}
+    {% if resultado.contratos_criados %}
+      <p>Contratos {% if resultado.simulacao %}que seriam criados{% else %}criados{% endif %}: <strong>{{ resultado.contratos_criados|join:", " }}</strong></p>
+    {% endif %}
+
+    {% if resultado.erros %}
+      <h3>Linhas com erro (corrija na planilha e envie de novo — as linhas corretas não são duplicadas)</h3>
+      <table class="imp-tabela">
+        <thead><tr><th>Linha</th><th>Funcionário</th><th>Problema</th></tr></thead>
+        <tbody>
+        {% for linha, identificacao, mensagem in resultado.erros %}
+          <tr><td>{{ linha }}</td><td>{{ identificacao }}</td><td>{{ mensagem }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+
+    {% if resultado.criados %}
+      <details><summary>Ver funcionários {% if resultado.simulacao %}que seriam criados{% else %}criados{% endif %} ({{ resultado.criados|length }})</summary>
+        <table class="imp-tabela">
+          <thead><tr><th>Linha</th><th>Funcionário</th></tr></thead>
+          <tbody>{% for linha, descricao in resultado.criados %}<tr><td>{{ linha }}</td><td>{{ descricao }}</td></tr>{% endfor %}</tbody>
+        </table>
+      </details>
+    {% endif %}
+
+    {% if resultado.atualizados %}
+      <details><summary>Ver funcionários {% if resultado.simulacao %}que seriam atualizados{% else %}atualizados{% endif %} ({{ resultado.atualizados|length }})</summary>
+        <table class="imp-tabela">
+          <thead><tr><th>Linha</th><th>Funcionário</th><th>O que mudou</th></tr></thead>
+          <tbody>{% for linha, descricao, campos in resultado.atualizados %}<tr><td>{{ linha }}</td><td>{{ descricao }}</td><td>{{ campos }}</td></tr>{% endfor %}</tbody>
+        </table>
+      </details>
+    {% endif %}
+  {% endif %}
+  <hr style="margin: 24px 0;">
+{% endif %}
+
+<div class="imp-caixa">
+  <h2>Enviar planilha</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <p>{{ form.arquivo.errors }}<label for="{{ form.arquivo.id_for_label }}"><strong>{{ form.arquivo.label }}</strong></label><br>{{ form.arquivo }}</p>
+    <p>{{ form.contrato_padrao.errors }}<label for="{{ form.contrato_padrao.id_for_label }}"><strong>{{ form.contrato_padrao.label }}</strong></label><br>{{ form.contrato_padrao }}</p>
+    <p>{{ form.somente_conferir }} <label for="{{ form.somente_conferir.id_for_label }}">{{ form.somente_conferir.label }}</label></p>
+    <p>{{ form.criar_contratos }} <label for="{{ form.criar_contratos.id_for_label }}">{{ form.criar_contratos.label }}</label></p>
+    <input type="submit" class="default" value="Enviar planilha" style="float:none">
+  </form>
+</div>
+
+<div class="imp-caixa">
+  <h2>Como deve ser a planilha</h2>
+  <p><a class="button" href="{% url 'admin:contas_funcionario_modelo_planilha' %}">Baixar modelo de planilha (.xlsx)</a></p>
+  <ul class="imp-colunas">
+    {% for titulo, obrigatoria in colunas %}
+      <li>{{ titulo }}{% if obrigatoria %} <strong>(obrigatória)</strong>{% else %} <em>(opcional)</em>{% endif %}</li>
+    {% endfor %}
+  </ul>
+  <p>Os títulos podem variar um pouco (ex.: “MAT”, “Lotação”, “Dt Nasc”, “Função” também são aceitos).
+     O funcionário é identificado pela <strong>matrícula</strong>: se ela já existir, o cadastro é atualizado.
+     A coluna <strong>Telefone</strong> deve ser o <strong>celular com DDD</strong>: é por ele que o assistente do
+     WhatsApp reconhece a pessoa.</p>
+  <p>Só quer completar celular, tipo de posto e instalação de quem já está cadastrado (planilha do Efetivo, sem CPF)?
+     Use <a href="{% url 'admin:contas_funcionario_atualizar_efetivo' %}">Atualizar celulares (Efetivo)</a>.</p>
+</div>
+
+</div>
+{% endblock %}

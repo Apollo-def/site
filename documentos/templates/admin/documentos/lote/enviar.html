@@ -1,0 +1,36 @@
+{% extends "admin/base_site.html" %}
+
+{% block extrastyle %}{{ block.super }}{% include "admin/lotes/_estilo.html" %}{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Início</a>
+  &rsaquo; <a href="{% url 'admin:documentos_lotedocumento_changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+  &rsaquo; Enviar
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <div class="cc-caixa">
+    <p>Envie <strong>um único PDF</strong> com o documento de todos os funcionários (uma página por pessoa), como o
+       <strong>Termo de opção de vale-transporte</strong> ou o <strong>Registro de empregado</strong>.
+       O sistema lê o <strong>CPF</strong> de cada página, separa e entrega a cada funcionário somente o documento dele.</p>
+    <ul>
+      <li>Termo de VT: o funcionário pede no WhatsApp, assina e devolve pela própria conversa.</li>
+      <li>Registro de empregado: o funcionário pede no WhatsApp.</li>
+      <li>Se o funcionário já tinha um documento deste tipo, o novo <strong>substitui</strong> o anterior.</li>
+    </ul>
+
+    <form method="post" enctype="multipart/form-data" class="cc-form">
+      {% csrf_token %}
+      {% if form.non_field_errors %}<div class="cc-aviso cc-erro">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+      <p>{{ form.arquivo.errors }}<label for="{{ form.arquivo.id_for_label }}">{{ form.arquivo.label }}</label>{{ form.arquivo }}</p>
+      <p>{{ form.tipo.errors }}<label for="{{ form.tipo.id_for_label }}">{{ form.tipo.label }}</label>{{ form.tipo }}</p>
+      <p>{{ form.titulo.errors }}<label for="{{ form.titulo.id_for_label }}">{{ form.titulo.label }}</label>{{ form.titulo }}
+         <br><small>{{ form.titulo.help_text }}</small></p>
+      <input type="submit" class="default" value="Enviar e separar" style="float:none">
+    </form>
+  </div>
+</div>
+{% endblock %}

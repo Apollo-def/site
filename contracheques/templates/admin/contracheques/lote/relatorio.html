@@ -1,0 +1,17 @@
+{% extends "admin/lotes/relatorio.html" %}
+
+{% block cabecalho %}
+  <strong>Competência:</strong> {{ lote.competencia_por_extenso }} — {{ lote.get_tipo_display }}
+  {% if lote.contrato %} · <strong>Contrato:</strong> {{ lote.contrato }}{% endif %}<br>
+{% endblock %}
+{% block cabecalho_fim %}
+  {% if lote.competencia_detectada %}<br><strong>Competência escrita no PDF:</strong> {{ lote.competencia_detectada }}{% endif %}
+{% endblock %}
+
+{% block cartoes_problemas %}
+  <div class="cc-cartao cc-laranja"><strong>{{ lote.total_nao_encontrados }}</strong>matrículas não encontradas no cadastro</div>
+  <div class="cc-cartao cc-vermelho"><strong>{{ lote.total_sem_matricula }}</strong>páginas sem matrícula identificada</div>
+{% endblock %}
+
+{% block lido_no_pdf %}{% if p.matricula_lida %}Matrícula {{ p.matricula_lida }}{% endif %}{% endblock %}
+{% block sugestao %}{{ p.matricula_lida }}{% endblock %}

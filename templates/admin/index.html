@@ -1,0 +1,100 @@
+{% extends "admin/base_site.html" %}
+{# Visão geral do painel do RH: números do dia, o que está esperando e atalhos das tarefas mais comuns. #}
+
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+{% block nav-breadcrumbs %}{% endblock %}
+{% block content_title %}<h1>Olá, {% firstof user.first_name user.get_username %}!</h1>{% endblock %}
+
+{% block content %}
+<div id="content-main">
+
+{% if not whatsapp_ligado %}
+  <div class="pn-aviso pn-aviso-alerta">
+    O atendimento pelo WhatsApp está <strong>desligado</strong>. Os funcionários recebem a mensagem de que está indisponível.
+    {% if perms.contas.change_configuracaoportal %}<a href="{% url 'admin:contas_configuracaoportal_changelist' %}">Ligar em Configuração</a>.{% endif %}
+  </div>
+{% endif %}
+{% if sem_celular and perms.contas.view_funcionario %}
+  <div class="pn-aviso pn-aviso-alerta">
+    <strong>{{ sem_celular }}</strong> funcionário(s) ativo(s) sem celular válido no cadastro: eles não são atendidos pelo WhatsApp.
+    <a href="{% url 'admin:contas_funcionario_changelist' %}?situacao__exact=ativo&amp;whatsapp=sem">Ver quem são</a>
+  </div>
+{% endif %}
+
+<div class="pn-cartoes">
+  <a class="pn-cartao{% if com_rh %} pn-atencao{% endif %}" href="{% url 'admin:whatsapp_conversa_changelist' %}?estado__exact=humano">
+    <div class="pn-valor">{{ com_rh }}</div><div class="pn-legenda">conversas esperando o RH</div>
+    <div class="pn-detalhe">no WhatsApp</div>
+  </a>
+  <a class="pn-cartao{% if pedidos %} pn-atencao{% endif %}" href="{% url 'admin:solicitacoes_solicitacao_changelist' %}">
+    <div class="pn-valor">{{ pedidos }}</div><div class="pn-legenda">pedidos para analisar</div>
+    <div class="pn-detalhe">termos de VT e outras solicitações</div>
+  </a>
+  <div class="pn-cartao">
+    <div class="pn-valor">{{ mensagens_hoje }}</div><div class="pn-legenda">mensagens recebidas hoje</div>
+    <div class="pn-detalhe">{{ conversas_total }} funcionário(s) já conversaram com o assistente</div>
+  </div>
+  <div class="pn-cartao{% if pct_com_celular >= 90 %} pn-bom{% endif %}">
+    <div class="pn-valor">{{ pct_com_celular }}%</div><div class="pn-legenda">com celular cadastrado</div>
+    <div class="pn-medidor" style="margin-top:10px"><div style="width: {{ pct_com_celular }}%"></div></div>
+    <div class="pn-detalhe">{{ com_celular }} de {{ total_ativos }} ativos</div>
+  </div>
+</div>
+
+<div class="pn-grade">
+  <div class="pn-bloco">
+    <h2>Tarefas do dia a dia</h2>
+    <p class="pn-sub">Atalhos para o que o RH mais faz.</p>
+    <div class="pn-atalhos">
+      {% if perms.contracheques.add_lotecontracheque %}
+      <a class="pn-atalho" href="{% url 'admin:contracheques_lotecontracheque_changelist' %}">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 16v4h16v-4"/></svg>
+        <span><strong>Enviar contracheques</strong><small>PDF da folha do mês</small></span></a>
+      {% endif %}
+      {% if perms.documentos.add_lotedocumento %}
+      <a class="pn-atalho" href="{% url 'admin:documentos_lotedocumento_changelist' %}">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg>
+        <span><strong>Enviar termos e registros</strong><small>Termo de VT, registro de empregado</small></span></a>
+      {% endif %}
+      {% if perms.whatsapp.view_conversa %}
+      <a class="pn-atalho" href="{% url 'admin:whatsapp_conversa_changelist' %}">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>
+        <span><strong>Atendimentos</strong><small>Responder pelo WhatsApp</small></span></a>
+      {% endif %}
+      {% if perms.contas.add_funcionario %}
+      <a class="pn-atalho" href="{% url 'admin:contas_funcionario_importar' %}">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M19 8v6M16 11h6"/></svg>
+        <span><strong>Importar funcionários</strong><small>Planilha com nome, CPF e celular</small></span></a>
+      {% endif %}
+      {% if perms.contas.view_funcionario %}
+      <a class="pn-atalho" href="{% url 'painel_acompanhamento' %}">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>
+        <span><strong>Acompanhamento</strong><small>Quem recebeu o contracheque do mês</small></span></a>
+      {% endif %}
+      {% if perms.whatsapp.atender_whatsapp %}
+      <a class="pn-atalho" href="{% url 'admin:whatsapp_simulador' %}">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>
+        <span><strong>Simulador</strong><small>Testar o assistente como funcionário</small></span></a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="pn-bloco">
+    <h2>Esperando o RH</h2>
+    <p class="pn-sub">Itens que precisam de alguém da equipe.</p>
+    <table style="width:100%">
+      <tbody>
+        <tr><td><a href="{% url 'admin:whatsapp_conversa_changelist' %}?estado__exact=humano">Conversas transferidas para o RH</a></td><td style="text-align:right"><strong>{{ com_rh }}</strong></td></tr>
+        <tr><td><a href="{% url 'admin:whatsapp_pedidocadastro_changelist' %}?situacao__exact=pendente">Números novos pedindo acesso (cadastros pendentes)</a></td><td style="text-align:right"><strong>{{ cadastros }}</strong></td></tr>
+        <tr><td><a href="{% url 'admin:solicitacoes_solicitacao_changelist' %}">Pedidos aguardando análise</a></td><td style="text-align:right"><strong>{{ pedidos }}</strong></td></tr>
+        <tr><td><a href="{% url 'admin:whatsapp_perguntasemresposta_changelist' %}?resolvida__exact=0">Perguntas que o assistente não soube responder</a></td><td style="text-align:right"><strong>{{ perguntas }}</strong></td></tr>
+        <tr><td><a href="{% url 'admin:contracheques_paginanaoidentificada_changelist' %}?resolvida__exact=0">Páginas de contracheque sem dono</a></td><td style="text-align:right"><strong>{{ paginas }}</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div>
+{% endblock %}
+
+{% block sidebar %}{% endblock %}

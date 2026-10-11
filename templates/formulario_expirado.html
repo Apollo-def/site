@@ -1,0 +1,16 @@
+{% extends "publico/base.html" %}
+{% block titulo %}Página desatualizada{% endblock %}
+
+{% block conteudo %}
+<section class="cartao">
+<h1>Esta página ficou desatualizada</h1>
+<div class="aviso aviso-erro">
+  Por segurança, o formulário não foi enviado (nada foi salvo nem mandado no WhatsApp).
+</div>
+<p>Isso acontece quando a página ficou aberta por muito tempo, quando alguém entrou no painel em outra aba,
+   ou quando outro sistema foi aberto no mesmo navegador.</p>
+<p><strong>O que fazer:</strong> volte, aperte <strong>F5</strong> para recarregar a página e faça de novo.
+   Se pedir, entre com o seu login.</p>
+{% if voltar %}<p><a href="{{ voltar }}">← Voltar para a página</a></p>{% endif %}
+</section>
+{% endblock %}

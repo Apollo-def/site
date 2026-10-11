@@ -1,0 +1,129 @@
+{% extends "admin/base_site.html" %}
+
+{% block extrastyle %}{{ block.super }}
+<style>
+  .rl-filtros { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin: 0; }
+  .rl-filtros label { display: block; font-size: 12px; color: var(--pn-suave); margin-bottom: 3px; }
+  .rl-acoes { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto; }
+  .rl-num { font-variant-numeric: tabular-nums; text-align: right; }
+  .rl-tabela { overflow-x: auto; }
+  .rl-tabela table { width: 100%; }
+  .rl-conferir { color: #b45309; font-style: italic; }
+  .rl-cabecalho-impressao { display: none; }
+  @media print {
+    #header, #nav-sidebar, .breadcrumbs, .rl-filtros, .rl-acoes, .pn-aviso-tela, #toggle-nav-sidebar, .messagelist { display: none !important; }
+    .main, #content, #content-main { margin: 0 !important; padding: 0 !important; width: 100% !important; }
+    .rl-cabecalho-impressao { display: block; margin-bottom: 10px; }
+    .pn-bloco { break-inside: avoid-page; box-shadow: none; border: 1px solid #ccc; }
+    body { background: #fff; }
+  }
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs"><a href="{% url 'admin:index' %}">Visão geral</a>
+  &rsaquo; <a href="{% url 'admin:ocorrencias_ocorrencia_changelist' %}">Faltas e coberturas</a> &rsaquo; Relatório</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+
+<div class="rl-cabecalho-impressao">
+  <h2>Faltas, atestados, coberturas e extras — {{ de|date:"d/m/Y" }} a {{ ate|date:"d/m/Y" }}</h2>
+  <p>{% if tipo %}Tipo: {{ tipo }} · {% endif %}{% if escola %}Escola: {{ escola }} · {% endif %}Gerado em {% now "d/m/Y H:i" %}</p>
+</div>
+
+<div class="pn-bloco">
+  <form method="get" class="rl-filtros">
+    <div><label for="de">De</label><input type="date" id="de" name="de" value="{{ de|date:'Y-m-d' }}"></div>
+    <div><label for="ate">Até</label><input type="date" id="ate" name="ate" value="{{ ate|date:'Y-m-d' }}"></div>
+    <div><label for="tipo">Tipo</label><select id="tipo" name="tipo"><option value="">Todos</option>
+      {% for valor, rotulo in tipos %}<option value="{{ valor }}"{% if valor == tipo %} selected{% endif %}>{{ rotulo }}</option>{% endfor %}</select></div>
+    <div><label for="contrato">Contrato</label><select id="contrato" name="contrato"><option value="">Todos</option>
+      {% for c in contratos %}<option value="{{ c.pk }}"{% if c.pk|stringformat:"s" == contrato %} selected{% endif %}>{{ c.sigla }}</option>{% endfor %}</select></div>
+    <div><label for="escola">Escola/posto (parte do nome)</label><input id="escola" name="escola" value="{{ escola }}" placeholder="ex.: Lindalva"></div>
+    <div><input type="submit" value="Gerar relatório"></div>
+    <div class="rl-acoes">
+      <a class="button" href="?{{ consulta }}{% if consulta %}&amp;{% endif %}formato=excel">Baixar Excel (todas as abas)</a>
+      <button type="button" class="button" onclick="window.print()">Imprimir / salvar PDF</button>
+    </div>
+  </form>
+</div>
+
+{% if dados.a_conferir %}
+<div class="pn-aviso pn-aviso-alerta pn-aviso-tela">
+  <strong>{{ dados.a_conferir }} ocorrência{{ dados.a_conferir|pluralize }} ainda para conferir</strong> no período.
+  Elas entram no relatório com o nome escrito no grupo, marcado como <em>(conferir)</em>.
+  <a href="{% url 'admin:ocorrencias_ocorrencia_changelist' %}?situacao__exact=conferir">Conferir agora</a>.
+</div>
+{% endif %}
+
+<div class="pn-cartoes">
+  <div class="pn-cartao"><div class="pn-valor">{{ dados.totais.total }}</div><div class="pn-legenda">ocorrências</div></div>
+  <div class="pn-cartao"><div class="pn-valor">{{ dados.totais.falta }}</div><div class="pn-legenda">faltas</div></div>
+  <div class="pn-cartao"><div class="pn-valor">{{ dados.totais.atestado }}</div><div class="pn-legenda">atestados</div>
+    <div class="pn-detalhe">{{ dados.totais.dias_atestado }} dia{{ dados.totais.dias_atestado|pluralize }} de atestado</div></div>
+  <div class="pn-cartao"><div class="pn-valor">{{ dados.totais.cobertura }}</div><div class="pn-legenda">coberturas</div></div>
+  <div class="pn-cartao"><div class="pn-valor">{{ dados.totais.extra }}</div><div class="pn-legenda">extras</div></div>
+  <a class="pn-cartao{% if dados.sem_ok_adm %} pn-atencao{% endif %}" href="{% url 'admin:ocorrencias_ocorrencia_changelist' %}?ok_adm=nao">
+    <div class="pn-valor">{{ dados.sem_ok_adm }}</div><div class="pn-legenda">sem 👍 do ADM</div>
+    <div class="pn-detalhe">ainda sem o OK no grupo</div></a>
+</div>
+
+{% if not dados.totais.total %}
+  <div class="pn-bloco"><p class="pn-sub">Nenhuma ocorrência neste período com estes filtros.</p></div>
+{% else %}
+
+<div class="pn-bloco">
+  <h2>Por funcionário ({{ dados.por_funcionario|length }})</h2>
+  <p class="pn-sub">Quem tem mais ocorrências aparece primeiro. "Coberto(a)" = quantas vezes alguém cobriu essa pessoa.</p>
+  <div class="rl-tabela"><table>
+    <thead><tr><th>Funcionário</th><th>Matrícula</th><th>Escola/posto</th><th class="rl-num">Faltas</th><th class="rl-num">Atestados</th>
+      <th class="rl-num">Dias de atestado</th><th class="rl-num">Coberturas</th><th class="rl-num">Extras</th><th class="rl-num">Coberto(a)</th><th class="rl-num">Total</th></tr></thead>
+    <tbody>{% for p in dados.por_funcionario %}
+      <tr><td{% if p.conferir %} class="rl-conferir"{% endif %}>{{ p.nome }}</td><td>{{ p.matricula }}</td><td><small>{{ p.escola }}</small></td>
+        <td class="rl-num">{{ p.falta }}</td><td class="rl-num">{{ p.atestado }}</td><td class="rl-num">{{ p.dias_atestado }}</td>
+        <td class="rl-num">{{ p.cobertura }}</td><td class="rl-num">{{ p.extra }}</td><td class="rl-num">{{ p.coberto }}</td><td class="rl-num"><strong>{{ p.total }}</strong></td></tr>
+    {% endfor %}</tbody>
+  </table></div>
+</div>
+
+<div class="pn-bloco">
+  <h2>Por escola/posto ({{ dados.por_escola|length }})</h2>
+  <div class="rl-tabela"><table>
+    <thead><tr><th>Escola/posto</th><th class="rl-num">Faltas</th><th class="rl-num">Atestados</th><th class="rl-num">Dias de atestado</th>
+      <th class="rl-num">Coberturas</th><th class="rl-num">Extras</th><th class="rl-num">Total</th></tr></thead>
+    <tbody>{% for e in dados.por_escola %}
+      <tr><td>{{ e.escola }}</td><td class="rl-num">{{ e.falta }}</td><td class="rl-num">{{ e.atestado }}</td><td class="rl-num">{{ e.dias_atestado }}</td>
+        <td class="rl-num">{{ e.cobertura }}</td><td class="rl-num">{{ e.extra }}</td><td class="rl-num"><strong>{{ e.total }}</strong></td></tr>
+    {% endfor %}</tbody>
+  </table></div>
+</div>
+
+<div class="pn-bloco">
+  <h2>Por dia</h2>
+  <div class="rl-tabela"><table>
+    <thead><tr><th>Data</th><th class="rl-num">Faltas</th><th class="rl-num">Atestados</th><th class="rl-num">Coberturas</th>
+      <th class="rl-num">Extras</th><th class="rl-num">Total</th></tr></thead>
+    <tbody>{% for d in dados.por_dia %}
+      <tr><td>{{ d.data|date:"D, d/m/Y" }}</td><td class="rl-num">{{ d.falta }}</td><td class="rl-num">{{ d.atestado }}</td>
+        <td class="rl-num">{{ d.cobertura }}</td><td class="rl-num">{{ d.extra }}</td><td class="rl-num"><strong>{{ d.total }}</strong></td></tr>
+    {% endfor %}</tbody>
+  </table></div>
+</div>
+
+<div class="pn-bloco">
+  <h2>Por supervisor (quem mandou no grupo)</h2>
+  <div class="rl-tabela"><table>
+    <thead><tr><th>Supervisor</th><th class="rl-num">Faltas</th><th class="rl-num">Atestados</th><th class="rl-num">Coberturas</th>
+      <th class="rl-num">Extras</th><th class="rl-num">Total</th></tr></thead>
+    <tbody>{% for s in dados.por_supervisor %}
+      <tr><td>{{ s.supervisor }}</td><td class="rl-num">{{ s.falta }}</td><td class="rl-num">{{ s.atestado }}</td>
+        <td class="rl-num">{{ s.cobertura }}</td><td class="rl-num">{{ s.extra }}</td><td class="rl-num"><strong>{{ s.total }}</strong></td></tr>
+    {% endfor %}</tbody>
+  </table></div>
+</div>
+{% endif %}
+
+</div>
+{% endblock %}

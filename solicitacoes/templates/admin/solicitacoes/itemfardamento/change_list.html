@@ -1,0 +1,23 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools-items %}
+  <li><a href="{% url 'admin:solicitacoes_itemfardamento_exportar' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">Baixar planilha (Excel)</a></li>
+{% endblock %}
+
+{% block result_list %}
+  {% if resumo %}
+  <div class="pn-bloco" style="margin-bottom:16px">
+    <h2>Resumo para compra ({{ total_pecas }} peça{{ total_pecas|pluralize }})</h2>
+    <p class="pn-sub">Soma das peças da lista abaixo, com os mesmos filtros (período, contrato, situação...).</p>
+    <div style="display:flex;gap:18px;flex-wrap:wrap">
+      {% for peca in resumo %}
+        <table style="min-width:180px">
+          <thead><tr><th>{{ peca.nome }}</th><th style="text-align:right">{{ peca.total }}</th></tr></thead>
+          <tbody>{% for tamanho, quantidade in peca.tamanhos %}<tr><td>{{ tamanho }}</td><td style="text-align:right">{{ quantidade }}</td></tr>{% endfor %}</tbody>
+        </table>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+  {{ block.super }}
+{% endblock %}

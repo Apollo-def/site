@@ -1,0 +1,20 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools-items %}
+  <li><a href="{% url 'admin:ocorrencias_ocorrencia_relatorio' %}">Relatório detalhado</a></li>
+  <li><a href="{% url 'admin:ocorrencias_ocorrencia_exportar' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">Baixar planilha (Excel)</a></li>
+{% endblock %}
+
+{% block result_list %}
+  {% if total %}
+  <div class="pn-cartoes" style="margin-bottom:16px">
+    {% for rotulo, quantidade in resumo %}
+      <div class="pn-cartao"><div class="pn-legenda">{{ rotulo }}</div><div class="pn-valor">{{ quantidade }}</div></div>
+    {% endfor %}
+    <a class="pn-cartao{% if a_conferir %} pn-atencao{% endif %}" href="?situacao__exact=conferir">
+      <div class="pn-legenda">Para o RH conferir</div><div class="pn-valor">{{ a_conferir }}</div>
+      <div class="pn-detalhe">nome em dúvida ou tipo/data não claros</div></a>
+  </div>
+  {% endif %}
+  {{ block.super }}
+{% endblock %}

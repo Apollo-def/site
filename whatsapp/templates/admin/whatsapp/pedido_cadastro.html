@@ -1,0 +1,89 @@
+{% extends "admin/base_site.html" %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Visão geral</a>
+  &rsaquo; <a href="{% url 'admin:whatsapp_pedidocadastro_changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+  &rsaquo; {{ pedido.nome_informado }}
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main" style="max-width:980px">
+
+<div class="pn-cartoes">
+  <div class="pn-cartao"><div class="pn-legenda">Nome informado</div><div class="pn-valor" style="font-size:18px">{{ pedido.nome_informado }}</div></div>
+  <div class="pn-cartao{% if not pedido.cpf_informado %} pn-atencao{% endif %}"><div class="pn-legenda">CPF informado</div><div class="pn-valor" style="font-size:18px">{{ pedido.cpf_mascarado|default:"ainda não informou" }}</div>
+    {% if pedido.matricula_informada %}<div class="pn-detalhe">matrícula informada: {{ pedido.matricula_informada }}</div>{% endif %}</div>
+  <div class="pn-cartao"><div class="pn-legenda">Celular (WhatsApp)</div><div class="pn-valor" style="font-size:18px">{{ celular }}</div></div>
+  <div class="pn-cartao{% if pedido.situacao == 'pendente' %} pn-atencao{% endif %}"><div class="pn-legenda">Situação</div><div class="pn-valor" style="font-size:18px">{{ pedido.get_situacao_display }}</div>
+    <div class="pn-detalhe">pedido em {{ pedido.criado_em|date:"d/m/Y H:i" }}</div></div>
+</div>
+
+{% if pedido.situacao == "pendente" %}
+  <div class="pn-aviso pn-aviso-alerta">
+    <strong>Confira antes de liberar.</strong> Quem for liberado passa a receber pelo WhatsApp os contracheques e documentos
+    do funcionário escolhido. Por segurança, <strong>só dá para liberar para o funcionário que tem o CPF informado</strong>.
+    Nome parecido não basta. Na dúvida, confirme com o supervisor ou ligue para o número.
+  </div>
+  {% if not pedido.cpf_informado %}
+  <div class="pn-aviso">Este pedido é de antes da conferência por CPF. Quando a pessoa escrever de novo, o assistente pede o
+    CPF dela e aí o botão de liberar aparece.</div>
+  {% endif %}
+
+  <div class="pn-bloco">
+    <h2>Quem é no cadastro?</h2>
+    <p class="pn-sub">O dono do CPF informado aparece primeiro; depois, sugestões pelo nome. Se não estiver aqui, busque pelo nome, matrícula ou CPF.</p>
+    <form method="get" style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+      <input name="busca" value="{{ busca }}" placeholder="Nome, matrícula ou CPF" style="flex:1;min-width:240px">
+      <input type="submit" value="Buscar">
+    </form>
+    <div style="overflow-x:auto">
+    <table style="width:100%">
+      <thead><tr><th>Funcionário</th><th>Matrícula</th><th>Contrato / instalação</th><th>Celular atual</th><th>Confere?</th><th></th></tr></thead>
+      <tbody>
+      {% for linha in linhas %}
+        <tr>
+          <td><a href="{% url 'admin:contas_funcionario_change' linha.f.pk %}" target="_blank" rel="noopener">{{ linha.f.nome_completo }}</a>{% if linha.f.situacao != "ativo" %} <small>(desligado)</small>{% endif %}</td>
+          <td>{{ linha.f.matricula }}</td>
+          <td>{{ linha.f.contrato }}{% if linha.f.instalacao %}<br><small>{{ linha.f.instalacao }}</small>{% endif %}</td>
+          <td>{{ linha.f.telefone|default:"— sem celular" }}{% if linha.cpf_confere and linha.troca_celular %}<br><small>⚠️ será trocado por {{ celular }}</small>{% endif %}</td>
+          <td>{% if pedido.cpf_informado %}{% if linha.cpf_confere %}<strong>✅ CPF confere</strong>{% else %}❌ CPF diferente{% endif %}<br>{% endif %}{% if linha.nome_confere %}✅ nome{% else %}⚠️ nome diferente{% endif %}{% if pedido.matricula_informada %}<br>{% if linha.matricula_confere %}✅ matrícula{% else %}⚠️ matrícula diferente{% endif %}{% endif %}</td>
+          <td style="text-align:right">
+            {% if pode_resolver and linha.cpf_confere %}
+            <form method="post" onsubmit="return confirm('Liberar este WhatsApp para {{ linha.f.nome_completo|escapejs }}? O celular do cadastro passa a ser {{ celular }}.{% if linha.troca_celular %} O celular atual ({{ linha.f.telefone|escapejs }}) deixa de valer.{% endif %}');">
+              {% csrf_token %}<input type="hidden" name="funcionario" value="{{ linha.f.pk }}">
+              <input type="submit" class="default" value="Liberar para esta pessoa" style="float:none">
+            </form>
+            {% elif pode_resolver %}<small>🔒 só libera com o CPF certo</small>
+            {% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6">Ninguém encontrado. Busque de outro jeito ou cadastre como funcionário novo.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+    <p style="margin-top:14px">Não está no sistema? <a href="{{ link_novo }}">Cadastrar como funcionário novo</a>
+      <small>(nome, CPF e celular já vêm preenchidos; complete matrícula, nascimento e contrato. Depois de salvar, a pessoa já é reconhecida.)</small></p>
+  </div>
+
+  {% if pode_resolver %}
+  <form method="post" onsubmit="return confirm('Recusar? A pessoa recebe a mensagem para procurar o supervisor ou o RH.');">
+    {% csrf_token %}<input type="submit" name="recusar" value="Recusar (não é funcionário / não confere)" style="float:none">
+  </form>
+  {% endif %}
+{% else %}
+  <p>Resolvido por {{ pedido.resolvido_por|default:"reconhecimento automático" }} em {{ pedido.resolvido_em|date:"d/m/Y H:i" }}{% if pedido.funcionario %}: {{ pedido.funcionario }}{% endif %}.</p>
+{% endif %}
+
+<div class="pn-bloco" style="margin-top:18px">
+  <h2>Últimas mensagens</h2>
+  {% for m in mensagens %}
+    <p style="margin:6px 0"><small>{{ m.criada_em|date:"d/m H:i" }} · {{ m.get_autor_display }}</small><br>{{ m.texto|linebreaksbr }}</p>
+  {% empty %}<p class="pn-sub">Sem mensagens.</p>{% endfor %}
+</div>
+
+</div>
+{% endblock %}

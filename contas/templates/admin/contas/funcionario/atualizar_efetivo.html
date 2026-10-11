@@ -1,0 +1,99 @@
+{% extends "admin/base_site.html" %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Visão geral</a>
+  &rsaquo; <a href="{% url 'admin:contas_funcionario_changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+  &rsaquo; Atualizar celulares (Efetivo)
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+
+{% if resultado %}
+  {% if resultado.erro_geral %}
+    <div class="pn-aviso pn-aviso-alerta">Não foi possível ler a planilha: {{ resultado.erro_geral }}</div>
+  {% else %}
+    {% if resultado.simulacao %}
+      <div class="pn-aviso pn-aviso-alerta"><strong>SIMULAÇÃO — nada foi salvo.</strong> Confira abaixo. Se estiver certo,
+        envie o arquivo de novo com "Somente conferir" <strong>desmarcado</strong>.</div>
+    {% else %}
+      <div class="pn-aviso pn-aviso-ok"><strong>Cadastro atualizado.</strong> Os celulares já valem para o assistente do WhatsApp.</div>
+    {% endif %}
+
+    <div class="pn-cartoes">
+      <div class="pn-cartao"><div class="pn-valor">{{ resultado.total_linhas }}</div><div class="pn-legenda">pessoas na planilha</div></div>
+      <div class="pn-cartao pn-bom"><div class="pn-valor">{{ resultado.atualizados|length }}</div><div class="pn-legenda">{% if resultado.simulacao %}seriam atualizadas{% else %}atualizadas{% endif %}</div></div>
+      <div class="pn-cartao"><div class="pn-valor">{{ resultado.sem_alteracao }}</div><div class="pn-legenda">já estavam iguais</div></div>
+      <div class="pn-cartao{% if resultado.telefone_invalido or resultado.sem_telefone %} pn-atencao{% endif %}"><div class="pn-valor">{{ resultado.total_sem_celular }}</div><div class="pn-legenda">sem celular válido</div></div>
+      <div class="pn-cartao{% if resultado.repetidos %} pn-ruim{% endif %}"><div class="pn-valor">{{ resultado.repetidos|length }}</div><div class="pn-legenda">celulares repetidos</div></div>
+      <div class="pn-cartao{% if resultado.nome_diferente or resultado.nao_encontrados %} pn-ruim{% endif %}"><div class="pn-valor">{{ resultado.total_recusadas }}</div><div class="pn-legenda">linhas recusadas</div></div>
+    </div>
+
+    {% if resultado.repetidos %}
+      <div class="pn-bloco">
+        <h2>Celulares repetidos ({{ resultado.repetidos|length }})</h2>
+        <p class="pn-sub">O mesmo número está em mais de um cadastro. Por segurança, o assistente <strong>não atende</strong>
+           esses números até o RH corrigir (cada pessoa precisa do próprio celular).</p>
+        <table style="width:100%"><thead><tr><th>Celular</th><th>Cadastrado para</th></tr></thead><tbody>
+        {% for celular, nomes in resultado.repetidos %}<tr><td>{{ celular }}</td><td>{% for nome in nomes %}{{ nome }}{% if not forloop.last %}<br>{% endif %}{% endfor %}</td></tr>{% endfor %}
+        </tbody></table>
+      </div>
+    {% endif %}
+
+    {% if resultado.telefone_invalido or resultado.sem_telefone %}
+      <div class="pn-bloco">
+        <h2>Sem celular válido ({{ resultado.total_sem_celular }})</h2>
+        <p class="pn-sub">O cadastro dessas pessoas não foi alterado. Corrija na planilha (celular com DDD, ex.: 98 98888-7777)
+           ou direto no cadastro. Número sem DDD não é completado automaticamente: um DDD errado mandaria documentos para
+           outra pessoa.</p>
+        <table style="width:100%"><thead><tr><th>Linha</th><th>Funcionário</th><th>Matrícula</th><th>Na planilha</th></tr></thead><tbody>
+        {% for linha, nome, matricula, valor in resultado.telefone_invalido %}<tr><td>{{ linha }}</td><td>{{ nome }}</td><td>{{ matricula }}</td><td>{{ valor }}</td></tr>{% endfor %}
+        {% for linha, nome, matricula in resultado.sem_telefone %}<tr><td>{{ linha }}</td><td>{{ nome }}</td><td>{{ matricula }}</td><td><em>em branco</em></td></tr>{% endfor %}
+        </tbody></table>
+      </div>
+    {% endif %}
+
+    {% if resultado.nome_diferente or resultado.nao_encontrados %}
+      <div class="pn-bloco">
+        <h2>Linhas recusadas</h2>
+        <p class="pn-sub">Matrícula que não está no cadastro, ou cujo nome não confere. Nada foi alterado nelas.</p>
+        <table style="width:100%"><thead><tr><th>Linha</th><th>Nome na planilha</th><th>Matrícula</th><th>Problema</th></tr></thead><tbody>
+        {% for linha, nome, nome_cadastro, matricula in resultado.nome_diferente %}<tr><td>{{ linha }}</td><td>{{ nome }}</td><td>{{ matricula }}</td><td>No cadastro, essa matrícula é de <strong>{{ nome_cadastro }}</strong></td></tr>{% endfor %}
+        {% for linha, nome, matricula in resultado.nao_encontrados %}<tr><td>{{ linha }}</td><td>{{ nome }}</td><td>{{ matricula }}</td><td>Matrícula fora do cadastro (cadastre pela importação completa)</td></tr>{% endfor %}
+        </tbody></table>
+      </div>
+    {% endif %}
+
+    {% if resultado.atualizados %}
+      <details class="pn-bloco"><summary><strong>Ver quem {% if resultado.simulacao %}seria atualizado{% else %}foi atualizado{% endif %} ({{ resultado.atualizados|length }})</strong></summary>
+        <table style="width:100%;margin-top:10px"><thead><tr><th>Linha</th><th>Funcionário</th><th>Matrícula</th><th>O que mudou</th></tr></thead><tbody>
+        {% for linha, nome, matricula, campos in resultado.atualizados %}<tr><td>{{ linha }}</td><td>{{ nome }}</td><td>{{ matricula }}</td><td>{{ campos }}</td></tr>{% endfor %}
+        </tbody></table>
+      </details>
+    {% endif %}
+
+    {% if resultado.ativos_fora_da_planilha %}
+      <p class="pn-sub">{{ resultado.ativos_fora_da_planilha }} funcionário(s) ativo(s) do cadastro não estão nesta planilha
+        (talvez de outros contratos). Eles não foram alterados.</p>
+    {% endif %}
+  {% endif %}
+{% endif %}
+
+<div class="pn-bloco">
+  <h2>Enviar a planilha do Efetivo</h2>
+  <p class="pn-sub">Completa o <strong>celular</strong>, o <strong>tipo de posto</strong> e a <strong>instalação</strong> de quem já
+     está cadastrado, pela <strong>matrícula</strong>. Não cria ninguém e não mexe em CPF. Colunas reconhecidas:
+     Funcionário, Matrícula, Tipo de Posto, Fones (ou Telefone/Celular) e Instalação.</p>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <p>{{ form.arquivo.errors }}<label for="{{ form.arquivo.id_for_label }}"><strong>{{ form.arquivo.label }}</strong></label><br>{{ form.arquivo }}</p>
+    <p>{{ form.somente_conferir }} <label for="{{ form.somente_conferir.id_for_label }}">{{ form.somente_conferir.label }}</label></p>
+    <input type="submit" class="default" value="Enviar planilha" style="float:none">
+  </form>
+</div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+# Nada disso entra no servidor: dados pessoais, senhas e arquivos gerados no computador.
+.git
+.venv
+.env
+db.sqlite3*
+arquivos_privados
+dados_rh
+sessoes
+staticfiles
+__pycache__
+*.pyc
+*.pdf
+*.xls
+*.xlsx
+*.csv
+!exemplos/planilha_teste_funcionarios.xlsx

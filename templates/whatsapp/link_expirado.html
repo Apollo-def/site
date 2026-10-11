@@ -1,0 +1,10 @@
+{% extends "publico/base.html" %}
+{% block titulo %}Link expirado{% endblock %}
+{% block conteudo %}
+<section class="cartao">
+  <h1>Este link não vale mais</h1>
+  <p>Por segurança, os links de documentos enviados no WhatsApp valem por 24 horas.</p>
+  <p>É só pedir de novo ao Assistente do Colaborador no WhatsApp.</p>
+  <a class="botao botao-claro" href="{% url 'inicio' %}">Voltar</a>
+</section>
+{% endblock %}

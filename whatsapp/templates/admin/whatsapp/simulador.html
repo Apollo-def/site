@@ -1,0 +1,76 @@
+{% extends "admin/base_site.html" %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Início</a>
+  &rsaquo; <a href="{% url 'admin:whatsapp_conversa_changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+  &rsaquo; Simulador
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main" style="max-width:760px">
+  <p>Converse com o assistente <strong>como se fosse o funcionário</strong>, sem usar o WhatsApp de verdade.
+     Ele segue as mesmas regras: reconhece pelo celular do cadastro e só envia os documentos daquele funcionário.
+     Tudo fica na auditoria, marcado como "simulador do painel".</p>
+  {% if not canal_ligado %}<p><small>O atendimento real está <strong>desligado</strong> em Configuração; o simulador funciona assim mesmo.</small></p>{% endif %}
+
+  <form method="get" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+    <label for="busca"><strong>Funcionário:</strong></label>
+    <input id="busca" name="busca" value="{{ busca|default:numero }}" placeholder="Nome, matrícula, CPF ou celular"
+           style="flex:1;min-width:240px" required {% if not numero %}autofocus{% endif %}>
+    <input type="submit" value="Buscar">
+  </form>
+
+  {% if busca %}
+    <div class="pn-bloco" style="padding:0;overflow-x:auto">
+    <table style="width:100%">
+      <thead><tr><th>Nome</th><th>Matrícula</th><th>Contrato</th><th>Instalação</th><th>Celular (WhatsApp)</th><th></th></tr></thead>
+      <tbody>
+      {% for f in encontrados %}
+        <tr>
+          <td><strong>{{ f.nome_completo }}</strong>{% if f.situacao != "ativo" %} <small>(desligado)</small>{% endif %}</td>
+          <td>{{ f.matricula }}</td>
+          <td>{{ f.contrato }}</td>
+          <td>{{ f.instalacao|default:"—" }}</td>
+          <td>{% if f.whatsapp %}{{ f.telefone }}{% elif f.telefone %}⚠️ {{ f.telefone }} <small>(não é celular)</small>{% else %}— sem celular{% endif %}</td>
+          <td style="text-align:right">
+            {% if f.whatsapp %}<a class="button" href="?numero={{ f.whatsapp }}">Abrir conversa</a>
+            {% else %}<a href="{% url 'admin:contas_funcionario_change' f.pk %}">Cadastrar celular</a>{% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6">Nenhum funcionário encontrado para "{{ busca }}".</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+    {% if encontrados|length >= limite_busca %}<p><small>Mostrando os {{ limite_busca }} primeiros. Escreva mais do nome para afinar a busca.</small></p>{% endif %}
+  {% elif not numero %}
+    {% if exemplos %}
+      <details style="margin-bottom:12px"><summary>Funcionários com celular cadastrado (para testar)</summary>
+        <ul>{% for f in exemplos %}<li><a href="?numero={{ f.whatsapp }}">{{ f.nome_completo }}</a> — {{ f.matricula }} — {{ f.contrato }} — {{ f.telefone }}</li>{% endfor %}</ul>
+      </details>
+    {% else %}
+      <p><small>Nenhum funcionário tem celular cadastrado ainda. Cadastre o telefone de alguém (ex.: o seu) em Funcionários para testar.</small></p>
+    {% endif %}
+  {% endif %}
+
+  {% if numero %}
+    <p>{% if dono %}Conversa de <strong>{{ dono.nome_completo }}</strong> · matrícula {{ dono.matricula }} · {{ dono.contrato }} · celular {{ dono.telefone }}.{% else %}Este número <strong>não está no cadastro</strong>: o assistente não vai entregar nada.{% endif %}</p>
+    {% include "admin/whatsapp/_conversa.html" %}
+    <form method="post" enctype="multipart/form-data" style="margin-top:12px">{% csrf_token %}
+      <input type="hidden" name="numero" value="{{ numero }}">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <input name="texto" id="texto-simulador" placeholder="Escreva como o funcionário (ex.: quero meu contracheque)" style="flex:1;min-width:260px" autofocus>
+        <input type="file" name="arquivo" accept="image/jpeg,image/png,application/pdf" title="Foto ou PDF do termo assinado">
+        <input type="submit" class="default" value="Enviar" style="float:none">
+      </div>
+    </form>
+    <form method="post" style="margin-top:8px">{% csrf_token %}
+      <input type="hidden" name="numero" value="{{ numero }}">
+      <input type="submit" name="reiniciar" value="Recomeçar a conversa do simulador">
+    </form>
+  {% endif %}
+</div>
+{% endblock %}

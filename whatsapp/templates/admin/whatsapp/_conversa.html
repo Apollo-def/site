@@ -1,0 +1,25 @@
+<style>
+  .wa-tela { max-width: 720px; background: #e9e4dc; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 8px; min-height: 120px; }
+  .wa-msg { max-width: 82%; padding: 8px 11px 6px; border-radius: 9px; box-shadow: 0 1px 1px rgba(0,0,0,.12); white-space: pre-wrap; word-wrap: break-word; color: #1c2430; font-size: 14px; line-height: 1.45; }
+  .wa-entrada { align-self: flex-start; background: #fff; }
+  .wa-saida { align-self: flex-end; background: #d9fdd3; }
+  .wa-rh { align-self: flex-end; background: #cfe3ff; }
+  .wa-meta { display: block; text-align: right; font-size: 11px; color: #5d6b7c; margin-top: 3px; }
+  .wa-anexo { display: inline-block; margin: 2px 0 4px; padding: 5px 9px; border-radius: 6px; background: rgba(0,0,0,.06); font-weight: 600; text-decoration: none; color: #0b3d6e; }
+  .wa-falhou { color: #b3261e; font-weight: 700; }
+  .wa-vazio { color: #5d6b7c; text-align: center; margin: auto; }
+</style>
+<div class="wa-tela" id="wa-tela">
+  {% for m in mensagens %}
+    <div class="wa-msg {% if m.direcao == 'entrada' %}wa-entrada{% elif m.autor == 'rh' %}wa-rh{% else %}wa-saida{% endif %}">
+      {% if m.anexo_nome %}
+        {% if "/audios/" in m.anexo_caminho %}<audio controls preload="none" src="{% url 'arquivo_privado_admin' m.anexo_caminho %}" style="max-width:100%"></audio>
+        {% elif m.anexo_caminho %}<a class="wa-anexo" href="{% url 'arquivo_privado_admin' m.anexo_caminho %}" target="_blank">📄 {{ m.anexo_nome }}</a>{% else %}<span class="wa-anexo">📎 {{ m.anexo_nome }}</span>{% endif %}<br>
+      {% endif %}{{ m.texto }}
+      <span class="wa-meta">{% if m.autor == 'rh' %}RH{% if m.enviado_por %} · {{ m.enviado_por.get_username }}{% endif %} · {% elif m.autor == 'assistente' %}Assistente · {% endif %}{{ m.criada_em|date:"d/m H:i" }}{% if m.falhou %} · <span class="wa-falhou">não enviada</span>{% endif %}</span>
+    </div>
+  {% empty %}
+    <p class="wa-vazio">Nenhuma mensagem ainda.</p>
+  {% endfor %}
+</div>
+<script>(function () { var t = document.getElementById("wa-tela"); if (t) { t.lastElementChild && t.lastElementChild.scrollIntoView({block: "nearest"}); } })();</script>

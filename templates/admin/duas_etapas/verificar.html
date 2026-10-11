@@ -1,0 +1,35 @@
+{% extends "admin/base_site.html" %}
+{# Segunda etapa do login: mesma aparência da tela de login. #}
+
+{% block bodyclass %}{{ block.super }} login{% endblock %}
+{% block usertools %}{% endblock %}
+{% block nav-breadcrumbs %}{% endblock %}
+{% block content_title %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <p style="font-size:15px;margin:0 0 6px"><strong>Verificação em duas etapas</strong></p>
+  <p style="color:var(--pn-suave);margin:0 0 16px">Abra o app autenticador no seu celular e digite o código de 6 números
+     do <strong>Painel do RH</strong>.</p>
+  {% if erro %}<p class="errornote">{{ erro }}</p>{% endif %}
+  <form method="post" autocomplete="off">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <div class="form-row">
+      <label for="codigo">Código</label>
+      <input id="codigo" name="codigo" inputmode="numeric" autocomplete="one-time-code" maxlength="9" required autofocus
+             placeholder="000000" style="font-size:22px;letter-spacing:6px;text-align:center">
+    </div>
+    <div class="submit-row"><input type="submit" value="Entrar"></div>
+  </form>
+  <details style="margin-top:14px">
+    <summary style="cursor:pointer;color:var(--pn-azul)">Perdi o celular</summary>
+    <p style="color:var(--pn-suave)">Digite um dos <strong>códigos reserva</strong> (formato 1234-5678) no mesmo campo.
+       Cada um vale uma vez. Sem eles, peça a outro administrador do RH, ou rode no PC servidor:
+       <code>python manage.py desativar_duas_etapas SEU_USUARIO</code>.</p>
+  </details>
+  <form method="post" action="{% url 'admin:logout' %}" style="margin-top:10px;text-align:center">
+    {% csrf_token %}<button type="submit" style="background:none;border:0;color:var(--pn-azul);cursor:pointer">Sair</button>
+  </form>
+</div>
+{% endblock %}

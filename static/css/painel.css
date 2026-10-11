@@ -1,0 +1,317 @@
+/* ==========================================================================
+   Painel do RH — tema corporativo do Grupo Global sobre o painel do Django.
+   Cores em variáveis (claro e escuro); o resto do painel do Django usa as mesmas variáveis.
+   ========================================================================== */
+:root, :root[data-theme="light"] {
+  --pn-marinho: #0b2545;
+  --pn-marinho-2: #13315c;
+  --pn-azul: #1d5fa8;
+  --pn-azul-claro: #e8f0fa;
+  --pn-laranja: #e8710a;
+  --pn-fundo: #f3f5f8;
+  --pn-cartao: #ffffff;
+  --pn-borda: #dfe4ec;
+  --pn-texto: #1c2430;
+  --pn-suave: #5f6b7a;
+  --pn-verde: #1e7a46;
+  --pn-vermelho: #b42318;
+  --pn-sombra: 0 1px 2px rgba(16, 24, 40, .06), 0 1px 3px rgba(16, 24, 40, .08);
+
+  --primary: var(--pn-marinho);
+  --secondary: var(--pn-azul);
+  --accent: #f5b041;
+  --primary-fg: #fff;
+  --body-fg: var(--pn-texto);
+  --body-bg: var(--pn-cartao);
+  --body-quiet-color: var(--pn-suave);
+  --body-loud-color: #000;
+  --header-color: var(--pn-texto);
+  --header-branding-color: var(--pn-marinho);
+  --header-bg: var(--pn-cartao);
+  --header-link-color: var(--pn-azul);
+  --breadcrumbs-fg: var(--pn-suave);
+  --breadcrumbs-link-fg: var(--pn-azul);
+  --breadcrumbs-bg: transparent;
+  --link-fg: var(--pn-azul);
+  --link-hover-color: #134a86;
+  --link-selected-fg: var(--pn-marinho);
+  --hairline-color: #e6eaf0;
+  --border-color: var(--pn-borda);
+  --darkened-bg: #f6f8fb;
+  --selected-bg: #e4ecf7;
+  --selected-row: #fff8dd;
+  --button-bg: var(--pn-azul);
+  --button-hover-bg: #174d89;
+  --default-button-bg: var(--pn-marinho);
+  --default-button-hover-bg: var(--pn-marinho-2);
+  --object-tools-bg: var(--pn-azul);
+  --object-tools-hover-bg: #174d89;
+  --font-family-primary: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --pn-fundo: #0f141b;
+    --pn-cartao: #171d26;
+    --pn-borda: #2a3340;
+    --pn-texto: #e6eaf0;
+    --pn-suave: #9aa6b5;
+    --pn-azul: #5b9be0;
+    --pn-azul-claro: #1b2a3d;
+    --pn-verde: #4cc38a;
+    --pn-vermelho: #f2766b;
+    --pn-sombra: 0 1px 2px rgba(0, 0, 0, .4);
+    --body-loud-color: #fff;
+    --hairline-color: #232b36;
+    --darkened-bg: #131922;
+    --selected-bg: #1d2a3a;
+    --selected-row: #2a2615;
+    --link-hover-color: #8ab8ec;
+    --link-selected-fg: #b8d4f5;
+    --header-branding-color: #e6eaf0;
+  }
+}
+:root[data-theme="dark"] {
+  --pn-fundo: #0f141b;
+  --pn-cartao: #171d26;
+  --pn-borda: #2a3340;
+  --pn-texto: #e6eaf0;
+  --pn-suave: #9aa6b5;
+  --pn-azul: #5b9be0;
+  --pn-azul-claro: #1b2a3d;
+  --pn-verde: #4cc38a;
+  --pn-vermelho: #f2766b;
+  --pn-sombra: 0 1px 2px rgba(0, 0, 0, .4);
+  --body-loud-color: #fff;
+  --hairline-color: #232b36;
+  --darkened-bg: #131922;
+  --selected-bg: #1d2a3a;
+  --selected-row: #2a2615;
+  --link-hover-color: #8ab8ec;
+  --link-selected-fg: #b8d4f5;
+  --header-branding-color: #e6eaf0;
+}
+
+body { background: var(--pn-fundo); color: var(--pn-texto); font-size: 14px; }
+.pn-oculto { position: absolute; opacity: 0; pointer-events: none; width: 1px; height: 1px; }
+
+/* --- Cabeçalho ---------------------------------------------------------- */
+#header {
+  position: sticky; top: 0; z-index: 30;
+  height: 60px; padding: 0 20px; gap: 14px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--pn-cartao); color: var(--pn-texto);
+  border-bottom: 1px solid var(--pn-borda);
+}
+#branding { flex: 1; display: flex; align-items: center; }
+#branding h1, #site-name { margin: 0; }
+.pn-marca { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+.pn-marca:hover { text-decoration: none; }
+.pn-logo {
+  display: grid; place-items: center; width: 38px; height: 38px; border-radius: 9px;
+  background: linear-gradient(135deg, var(--pn-marinho), var(--pn-azul)); color: #fff;
+  font-weight: 800; letter-spacing: .5px; font-size: 15px;
+}
+.pn-marca-texto strong { display: block; font-size: 16px; color: var(--header-branding-color); line-height: 1.2; }
+.pn-marca-texto small { display: block; font-size: 12px; color: var(--pn-suave); }
+#user-tools {
+  display: flex; align-items: center; gap: 10px; margin: 0; padding: 0;
+  font-size: 13px; color: var(--pn-suave); text-transform: none; letter-spacing: 0;
+}
+#user-tools a, #logout-form button { color: var(--pn-azul); border-bottom: 0; text-decoration: none; }
+#user-tools a:hover, #logout-form button:hover { color: var(--link-hover-color); text-decoration: underline; }
+#user-tools strong { color: var(--pn-texto); font-weight: 600; }
+.pn-avatar {
+  display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
+  background: var(--pn-azul-claro); color: var(--pn-azul); font-weight: 700; text-transform: uppercase;
+}
+.pn-botao-menu { display: none; cursor: pointer; padding: 6px; border-radius: 8px; color: var(--pn-texto); }
+.pn-botao-menu svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.pn-botao-menu:hover { background: var(--darkened-bg); }
+.theme-toggle svg { color: var(--pn-suave); }
+
+/* --- Trilha (breadcrumbs) ---------------------------------------------- */
+div.breadcrumbs {
+  background: transparent; color: var(--pn-suave); border: 0;
+  padding: 14px 28px 0; font-size: 12.5px; margin-left: 248px;
+}
+div.breadcrumbs a { color: var(--pn-azul); }
+
+/* --- Menu lateral ------------------------------------------------------ */
+#main { display: flex; }
+.pn-menu {
+  position: fixed; top: 60px; left: 0; bottom: 0; z-index: 25;
+  width: 248px; overflow-y: auto; padding: 14px 10px 24px;
+  background: var(--pn-marinho); color: #c9d6e8;
+  scrollbar-width: thin; scrollbar-color: #2b4a75 transparent;
+}
+.pn-secao { margin-bottom: 14px; }
+.pn-secao-titulo {
+  padding: 6px 12px; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  color: #7f97b8;
+}
+.pn-item {
+  display: flex; align-items: center; gap: 10px; padding: 8px 12px; margin: 1px 0;
+  border-radius: 8px; color: #dbe5f2; text-decoration: none; font-size: 13.5px;
+}
+.pn-item:link, .pn-item:visited { color: #dbe5f2; }
+.pn-item svg { flex: 0 0 18px; width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8;
+  stroke-linecap: round; stroke-linejoin: round; opacity: .85; }
+.pn-item:hover { background: rgba(255, 255, 255, .08); color: #fff; text-decoration: none; }
+.pn-item.pn-ativo { background: var(--pn-azul); color: #fff; font-weight: 600; }
+.pn-item.pn-ativo svg { opacity: 1; }
+.pn-rotulo { flex: 1; min-width: 0; }
+.pn-numero {
+  min-width: 20px; padding: 1px 7px; border-radius: 999px; text-align: center;
+  background: var(--pn-laranja); color: #fff; font-size: 11.5px; font-weight: 700;
+}
+.pn-fundo { display: none; }
+
+/* --- Conteúdo --------------------------------------------------------- */
+#main > .content, .main > .content { flex: 1; min-width: 0; padding: 0 28px 28px; margin-left: 248px; max-width: none; }
+#content { padding: 8px 0 0; }
+#content h1 { font-size: 22px; font-weight: 700; color: var(--pn-texto); margin: 6px 0 18px; }
+#content h2 { color: var(--pn-texto); }
+#footer { padding: 0; }
+.pn-rodape { margin-left: 248px; padding: 14px 28px 24px; font-size: 12px; color: var(--pn-suave); }
+
+/* Cartões brancos para as áreas de conteúdo do Django */
+#changelist, .module, #content-main > form > div > fieldset, .inline-group, #content-related .module {
+  background: var(--pn-cartao); border-radius: 10px;
+}
+.module { border: 1px solid var(--pn-borda); box-shadow: var(--pn-sombra); overflow: hidden; }
+.module h2, .module caption, .inline-group h2 {
+  background: var(--darkened-bg); color: var(--pn-texto); font-weight: 600; font-size: 13px;
+  text-transform: none; letter-spacing: 0; padding: 10px 14px; border-bottom: 1px solid var(--pn-borda);
+}
+fieldset.module { margin-bottom: 18px; }
+#changelist { border: 1px solid var(--pn-borda); box-shadow: var(--pn-sombra); padding: 0; }
+#changelist .actions { background: var(--darkened-bg); border-bottom: 1px solid var(--pn-borda); padding: 10px 14px; }
+#changelist #toolbar { background: transparent; border-bottom: 1px solid var(--pn-borda); padding: 12px 14px; margin: 0; }
+#changelist #toolbar form input[type="text"] { border-radius: 8px; padding: 7px 10px; min-width: 260px; }
+#changelist-filter { background: var(--pn-cartao); border: 1px solid var(--pn-borda); border-radius: 10px; }
+#changelist-filter h2 { background: var(--darkened-bg); color: var(--pn-texto); border-radius: 10px 10px 0 0; }
+#changelist-filter li.selected a { color: var(--pn-azul); }
+.paginator { padding: 12px 14px; border-top: 1px solid var(--pn-borda); }
+
+/* Tabelas */
+table { border-color: var(--pn-borda); }
+thead th, tfoot td {
+  background: var(--darkened-bg); color: var(--pn-suave); font-weight: 600; font-size: 12px;
+  text-transform: none; border-bottom: 1px solid var(--pn-borda);
+}
+thead th a:link, thead th a:visited { color: var(--pn-suave); }
+td, th { border-bottom-color: var(--hairline-color); padding: 10px 12px; }
+tr:hover td { background: var(--darkened-bg); }
+#result_list tbody tr.selected td { background: var(--selected-row); }
+
+/* Botões */
+.button, input[type=submit], input[type=button], .submit-row input, a.button {
+  border-radius: 8px; padding: 8px 14px; font-weight: 600;
+}
+.object-tools a:link, .object-tools a:visited { border-radius: 8px; padding: 6px 14px; font-weight: 600; }
+.submit-row { background: var(--pn-cartao); border: 1px solid var(--pn-borda); border-radius: 10px; padding: 14px; }
+.submit-row a.deletelink { border-radius: 8px; }
+input[type=text], input[type=password], input[type=email], input[type=url], input[type=number], input[type=tel],
+input[type=search], textarea, select, .vTextField {
+  border-radius: 7px; border: 1px solid var(--pn-borda); padding: 7px 9px;
+}
+input:focus, textarea:focus, select:focus { border-color: var(--pn-azul); outline: 2px solid var(--pn-azul-claro); }
+
+/* Mensagens */
+ul.messagelist li { border-radius: 8px; margin: 0 0 10px; padding: 12px 16px 12px 44px; }
+
+/* --- Tela de login --------------------------------------------------- */
+body.login { background: linear-gradient(160deg, var(--pn-marinho) 0%, var(--pn-marinho-2) 55%, var(--pn-azul) 100%); }
+body.login #header {
+  position: static; background: transparent; border: 0; justify-content: center; height: auto; padding: 0;
+  margin-bottom: 18px;
+}
+body.login #container {
+  width: min(400px, calc(100% - 32px)); margin: 10vh auto 0; padding: 28px; border-radius: 14px;
+  background: var(--pn-cartao); box-shadow: 0 20px 50px rgba(0, 0, 0, .25);
+}
+body.login .main > .content, body.login #main > .content, body.login .pn-rodape, body.login div.breadcrumbs { margin-left: 0; padding: 0; }
+body.login #content { padding: 0; }
+body.login .submit-row { border: 0; padding: 8px 0 0; background: transparent; }
+body.login .submit-row input { width: 100%; padding: 11px; font-size: 15px; }
+body.login .form-row { padding: 6px 0; border: 0; }
+body.login .form-row input { width: 100%; padding: 10px; font-size: 15px; }
+body.login .pn-rodape { text-align: center; padding-top: 18px; }
+
+/* --- Tela inicial (Visão geral) e painéis próprios -------------------- */
+.pn-cartoes { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin-bottom: 22px; }
+.pn-cartao {
+  background: var(--pn-cartao); border: 1px solid var(--pn-borda); border-radius: 12px; padding: 16px 18px;
+  box-shadow: var(--pn-sombra); text-decoration: none; color: inherit; display: block;
+}
+a.pn-cartao:hover { border-color: var(--pn-azul); text-decoration: none; }
+.pn-cartao .pn-valor { font-size: 28px; font-weight: 700; line-height: 1.15; color: var(--pn-texto); font-variant-numeric: tabular-nums; }
+.pn-cartao .pn-legenda { color: var(--pn-suave); font-size: 13px; margin-top: 2px; }
+.pn-cartao .pn-detalhe { color: var(--pn-suave); font-size: 12px; margin-top: 8px; }
+.pn-cartao.pn-atencao .pn-valor { color: var(--pn-laranja); }
+.pn-cartao.pn-bom .pn-valor { color: var(--pn-verde); }
+.pn-cartao.pn-ruim .pn-valor { color: var(--pn-vermelho); }
+.pn-grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 18px; align-items: start; }
+.pn-bloco {
+  background: var(--pn-cartao); border: 1px solid var(--pn-borda); border-radius: 12px; padding: 18px 20px;
+  box-shadow: var(--pn-sombra); margin-bottom: 18px;
+}
+.pn-bloco h2 { margin: 0 0 4px; font-size: 15px; font-weight: 700; background: none; padding: 0; color: var(--pn-texto); text-transform: none; }
+.pn-bloco .pn-sub { color: var(--pn-suave); margin: 0 0 14px; font-size: 13px; }
+.pn-atalhos { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+.pn-atalho {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px;
+  border: 1px solid var(--pn-borda); text-decoration: none; color: var(--pn-texto); background: var(--darkened-bg);
+}
+.pn-atalho:link, .pn-atalho:visited { color: var(--pn-texto); }
+.pn-atalho:hover { border-color: var(--pn-azul); text-decoration: none; background: var(--pn-azul-claro); }
+.pn-atalho svg { flex: 0 0 34px; width: 34px; height: 34px; padding: 7px; border-radius: 8px; background: var(--pn-azul-claro);
+  color: var(--pn-azul); fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.pn-atalho strong { display: block; font-size: 13.5px; }
+.pn-atalho small { display: block; color: var(--pn-suave); font-size: 12px; }
+.pn-aviso { padding: 12px 16px; border-radius: 10px; margin-bottom: 18px; border: 1px solid; font-size: 13.5px; }
+.pn-aviso-alerta { background: #fff7e6; border-color: #f5d398; color: #6b4a00; }
+.pn-aviso-ok { background: #e9f7ef; border-color: #b7e2c7; color: #14532d; }
+:root[data-theme="dark"] .pn-aviso-alerta { background: #2b2213; border-color: #5c4513; color: #f3d9a4; }
+:root[data-theme="dark"] .pn-aviso-ok { background: #13261c; border-color: #1f4a32; color: #b5e8cb; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .pn-aviso-alerta { background: #2b2213; border-color: #5c4513; color: #f3d9a4; }
+  :root:not([data-theme="light"]) .pn-aviso-ok { background: #13261c; border-color: #1f4a32; color: #b5e8cb; }
+}
+.pn-medidor { height: 8px; border-radius: 4px; background: var(--hairline-color); overflow: hidden; }
+.pn-medidor > div { height: 100%; background: var(--pn-azul); border-radius: 4px; }
+
+/* --- Celular e tablet: o menu vira gaveta (botão ☰ no topo) ----------- */
+@media (max-width: 1024px) {
+  .pn-botao-menu { display: inline-flex; }
+  .pn-menu { transform: translateX(-100%); transition: transform .2s ease; }
+  #pn-menu-aberto:checked ~ .main .pn-menu { transform: none; box-shadow: 4px 0 24px rgba(0, 0, 0, .25); }
+  #pn-menu-aberto:checked ~ .main .pn-fundo {
+    display: block; position: fixed; inset: 60px 0 0 0; z-index: 20; background: rgba(0, 0, 0, .35);
+  }
+  #main > .content, .main > .content, div.breadcrumbs, .pn-rodape { margin-left: 0; }
+  #main > .content, .main > .content { padding: 0 16px 20px; }
+  div.breadcrumbs { padding: 12px 16px 0; }
+  .pn-rodape { padding: 12px 16px 20px; }
+  #header { padding: 0 12px; }
+  .pn-marca-texto small { display: none; }
+  #user-tools strong, #user-tools a[href*="password_change"] { display: none; }
+  #changelist #toolbar form input[type="text"] { min-width: 0; width: 100%; }
+}
+
+/* --- Ajustes sobre regras do próprio Django --------------------------- */
+.dashboard #content { width: auto; max-width: 1180px; }          /* o Django limita a tela inicial a 600px */
+#logout-form button { text-transform: none; letter-spacing: 0; font-size: 13px; padding: 0; }
+.field-cpf_formatado, .field-matricula, .field-status_whatsapp, .field-numero_mascarado { white-space: nowrap; }
+@media (max-width: 1024px) {
+  body #header {                                                  /* o Django empilha o cabeçalho no celular */
+    flex-direction: row; flex-wrap: nowrap; align-items: center; justify-content: space-between;
+    height: 60px; padding: 0 12px;
+  }
+  body #user-tools { line-height: 1; text-align: right; gap: 8px; }
+  body #branding { flex: 1; min-width: 0; }
+  .pn-marca-texto strong { font-size: 15px; white-space: nowrap; }
+}
+
+#content button.button, #content a.button { padding: 9px 16px; font-size: 13.5px; border-radius: 8px; font-weight: 600; line-height: 1.2; }

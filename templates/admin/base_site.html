@@ -1,0 +1,71 @@
+{% extends "admin/base.html" %}
+{% load static %}
+{# Visual do painel do RH: cabeçalho da empresa, menu lateral por tarefa (portal/admin_site.py) e o tema em painel.css. #}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:"Painel do RH" }}{% endblock %}
+
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/painel.css' %}">
+<link rel="icon" type="image/png" href="{% static 'img/favicon-32.png' %}">
+{% endblock %}
+
+{% block header %}
+<input type="checkbox" id="pn-menu-aberto" class="pn-oculto" aria-hidden="true" tabindex="-1">
+<header id="header">
+  {% if menu_lateral %}
+    <label for="pn-menu-aberto" class="pn-botao-menu" aria-label="Abrir ou fechar o menu">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </label>
+  {% endif %}
+  <div id="branding">{% block branding %}
+    <a class="pn-marca" href="{% url 'admin:index' %}">
+      <span class="pn-logo">GG</span>
+      <span class="pn-marca-texto"><strong>Painel do RH</strong><small>Grupo Global · Globaltech Brasil</small></span>
+    </a>
+  {% endblock %}</div>
+  {% block usertools %}{{ block.super }}{% endblock %}
+</header>
+{% endblock %}
+
+{% block welcome-msg %}
+  <span class="pn-avatar" aria-hidden="true">{% firstof user.first_name|first user.get_username|first %}</span>
+  <strong>{% firstof user.get_short_name user.get_username %}</strong>
+{% endblock %}
+
+{% block nav-sidebar %}
+{% if menu_lateral %}
+<nav class="pn-menu" aria-label="Menu do painel">
+  {% for secao in menu_lateral %}
+    <div class="pn-secao">
+      {% if secao.titulo %}<div class="pn-secao-titulo">{{ secao.titulo }}</div>{% endif %}
+      {% for item in secao.itens %}
+        <a class="pn-item{% if item.ativo %} pn-ativo{% endif %}" href="{{ item.url }}"{% if item.ativo %} aria-current="page"{% endif %}>
+          <svg viewBox="0 0 24 24" aria-hidden="true">{{ item.icone|safe }}</svg>
+          <span class="pn-rotulo">{{ item.rotulo }}</span>
+          {% if item.numero %}<span class="pn-numero" title="{{ item.numero }} esperando o RH">{{ item.numero }}</span>{% endif %}
+        </a>
+      {% endfor %}
+    </div>
+  {% endfor %}
+</nav>
+<label for="pn-menu-aberto" class="pn-fundo" aria-hidden="true"></label>
+{% endif %}
+{% endblock %}
+
+{% block messages %}
+  {% if duas_etapas_pendente and menu_lateral and request.resolver_match.url_name != 'duas_etapas_configurar' %}
+    <div class="pn-aviso pn-aviso-alerta" style="margin-top:14px">
+      <strong>Proteja o seu login:</strong> ative a verificação em duas etapas (código do celular além da senha).
+      Leva 2 minutos. <a href="{% url 'admin:duas_etapas_configurar' %}">Ativar agora</a>.
+    </div>
+  {% endif %}
+  {% if senha_fraca %}
+    <div class="pn-aviso pn-aviso-alerta" style="margin-top:14px">
+      <strong>Sua senha do painel é fraca:</strong> {{ senha_fraca|join:"; " }}. Este login abre os dados de todos os
+      funcionários. <a href="{% url 'admin:password_change' %}">Trocar a senha agora</a>.
+    </div>
+  {% endif %}
+  {{ block.super }}
+{% endblock %}
+
+{% block footer %}<div class="pn-rodape">Portal do Colaborador · Grupo Global / Globaltech Brasil LTDA · dados protegidos conforme a LGPD</div>{% endblock %}

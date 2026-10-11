@@ -1,0 +1,145 @@
+{% extends "admin/base_site.html" %}
+
+{% block extrastyle %}{{ block.super }}
+<style>
+  .ac-barras { display: grid; grid-template-columns: repeat(14, 1fr); gap: 6px; align-items: end; height: 140px; margin-top: 8px; }
+  .ac-barra { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; gap: 4px; }
+  .ac-barra span { font-size: 11px; color: var(--pn-suave); font-variant-numeric: tabular-nums; }
+  .ac-barra div { width: 100%; min-height: 2px; background: var(--pn-azul); border-radius: 4px 4px 0 0; }
+  .ac-dias { display: grid; grid-template-columns: repeat(14, 1fr); gap: 6px; font-size: 11px; color: var(--pn-suave); text-align: center; margin-top: 4px; }
+  .ac-num { font-variant-numeric: tabular-nums; text-align: right; }
+  .ac-topo { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .ac-topo form { display: flex; gap: 8px; align-items: center; margin: 0; }
+  .ac-pct { display: flex; gap: 8px; align-items: center; }
+  .ac-pct .pn-medidor { flex: 0 0 90px; }
+  .ac-bloco-tabela { overflow-x: auto; }
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs"><a href="{% url 'admin:index' %}">Visão geral</a> &rsaquo; Acompanhamento</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+
+<div class="pn-cartoes">
+  <div class="pn-cartao"><div class="pn-valor">{{ total_ativos }}</div><div class="pn-legenda">funcionários ativos</div>
+    <div class="pn-detalhe">{{ com_celular }} com celular ({{ pct_com_celular }}%)</div></div>
+  <div class="pn-cartao pn-bom"><div class="pn-valor">{{ pct_entraram }}%</div><div class="pn-legenda">já conversaram no WhatsApp</div>
+    <div class="pn-detalhe">{{ ja_entraram }} de {{ total_ativos }}</div></div>
+  <a class="pn-cartao{% if atendimentos_rh %} pn-atencao{% endif %}" href="{% url 'admin:whatsapp_conversa_changelist' %}?estado__exact=humano">
+    <div class="pn-valor">{{ atendimentos_rh }}</div><div class="pn-legenda">conversas esperando o RH</div></a>
+  <a class="pn-cartao{% if pedidos_abertos %} pn-atencao{% endif %}" href="{% url 'admin:solicitacoes_solicitacao_changelist' %}">
+    <div class="pn-valor">{{ pedidos_abertos }}</div><div class="pn-legenda">pedidos aguardando o RH</div></a>
+  <div class="pn-cartao{% if paginas_pendentes %} pn-ruim{% endif %}"><div class="pn-valor">{{ paginas_pendentes }}</div>
+    <div class="pn-legenda">páginas de PDF sem dono</div><div class="pn-detalhe">contracheques e documentos</div></div>
+</div>
+
+<div class="pn-bloco">
+  <div class="ac-topo">
+    <h2>Contracheque de {{ competencia_nome|default:"—" }}</h2>
+    {% if competencias %}
+      <form method="get">
+        <label for="competencia">Mês:</label>
+        <select id="competencia" name="competencia" onchange="this.form.submit()">
+          {% for valor, nome in competencias %}<option value="{{ valor }}"{% if valor == competencia_atual %} selected{% endif %}>{{ nome }}</option>{% endfor %}
+        </select>
+        <noscript><input type="submit" value="Ver"></noscript>
+      </form>
+    {% endif %}
+  </div>
+  {% if entregues %}
+    <p class="pn-sub">{{ entregues }} publicados · <strong>{{ abertos }} recebidos ({{ pct_abertos }}%)</strong> · {{ total_nao_abriram }} ainda não pediram.
+      "Recebido" = o assistente enviou pelo WhatsApp (ou o funcionário abriu no antigo site).</p>
+    <div class="pn-medidor" style="height:14px"><div style="width: {{ pct_abertos }}%"></div></div>
+    {% if total_nao_abriram %}
+      <h3 style="margin-top:18px">Ainda não receberam ({{ total_nao_abriram }})</h3>
+      <p><a class="button" href="?competencia={{ competencia_atual }}&amp;exportar=nao_abriram">Baixar a lista completa em Excel</a>
+         <small> com telefone, para avisar quem ainda não pediu.</small></p>
+      <div class="ac-bloco-tabela">
+      <table style="width:100%">
+        <thead><tr><th>Funcionário</th><th>Matrícula</th><th>Contrato</th><th>Celular no cadastro</th></tr></thead>
+        <tbody>
+        {% for c in nao_abriram %}
+          <tr>
+            <td><a href="{% url 'admin:contas_funcionario_change' c.funcionario.pk %}">{{ c.funcionario.nome_completo }}</a></td>
+            <td>{{ c.funcionario.matricula }}</td>
+            <td>{{ c.funcionario.contrato }}</td>
+            <td>{% if c.funcionario.whatsapp %}📱 sim{% else %}⚠️ sem celular válido{% endif %}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      </div>
+      {% if total_nao_abriram > 50 %}<p><small>Mostrando 50 de {{ total_nao_abriram }}. A lista completa está no Excel.</small></p>{% endif %}
+    {% else %}
+      <div class="pn-aviso pn-aviso-ok" style="margin-top:14px">Todos já receberam o contracheque deste mês.</div>
+    {% endif %}
+  {% else %}
+    <p class="pn-sub">Nenhum contracheque de folha mensal enviado ainda.</p>
+  {% endif %}
+</div>
+
+<div class="pn-grade">
+  <div class="pn-bloco">
+    <h2>Pedidos parados há mais de {{ dias_parado }} dias ({{ parados|length }})</h2>
+    {% if parados %}
+      <div class="ac-bloco-tabela">
+      <table style="width:100%">
+        <thead><tr><th>Protocolo</th><th>Funcionário</th><th>Situação</th><th>Desde</th></tr></thead>
+        <tbody>
+        {% for s in parados %}
+          <tr>
+            <td><a href="{% url 'admin:solicitacoes_solicitacao_change' s.pk %}">{{ s.protocolo }}</a></td>
+            <td>{{ s.funcionario.nome_completo }}<br><small>{{ s.tipo }}</small></td>
+            <td>{{ s.get_status_display }}</td>
+            <td>{{ s.criado_em|date:"d/m/Y" }}<br><small>há {{ s.criado_em|timesince }}</small></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      </div>
+    {% else %}
+      <div class="pn-aviso pn-aviso-ok" style="margin:10px 0 0">Nenhum pedido parado. Bom trabalho!</div>
+    {% endif %}
+  </div>
+
+  <div class="pn-bloco">
+    <h2>Mensagens no WhatsApp</h2>
+    <p class="pn-sub">Mensagens recebidas por dia, últimos 14 dias.</p>
+    <div class="ac-barras" role="img" aria-label="Gráfico de mensagens recebidas por dia nos últimos 14 dias">
+      {% for dia, total, altura in acessos %}
+        <div class="ac-barra" title="{{ dia|date:'d/m' }}: {{ total }} mensagem(ns)"><span>{% if total %}{{ total }}{% endif %}</span><div style="height: {{ altura }}%"></div></div>
+      {% endfor %}
+    </div>
+    <div class="ac-dias">{% for dia, total, altura in acessos %}<span>{{ dia|date:"d/m" }}</span>{% endfor %}</div>
+  </div>
+</div>
+
+<div class="pn-bloco">
+  <h2>Por contrato</h2>
+  <div class="ac-bloco-tabela">
+  <table style="width:100%">
+    <thead><tr><th>Contrato</th><th class="ac-num">Ativos</th><th class="ac-num">Com celular</th><th>Já conversaram</th>
+      <th class="ac-num">Contracheques {{ competencia_nome }}</th><th>Recebidos</th></tr></thead>
+    <tbody>
+    {% for linha in por_contrato %}
+      <tr>
+        <td><strong>{{ linha.sigla }}</strong></td>
+        <td class="ac-num">{{ linha.ativos }}</td>
+        <td class="ac-num">{{ linha.com_celular }}</td>
+        <td><div class="ac-pct"><div class="pn-medidor"><div style="width: {{ linha.pct_entraram }}%"></div></div>{{ linha.pct_entraram }}% <small>({{ linha.entraram }})</small></div></td>
+        <td class="ac-num">{{ linha.entregues }}</td>
+        <td>{% if linha.entregues %}<div class="ac-pct"><div class="pn-medidor"><div style="width: {{ linha.pct_abertos }}%"></div></div>{{ linha.pct_abertos }}% <small>({{ linha.abertos }})</small></div>{% else %}—{% endif %}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="6">Nenhum funcionário cadastrado.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</div>
+
+</div>
+{% endblock %}

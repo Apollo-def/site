@@ -1,0 +1,17 @@
+# Dependências do Portal do Colaborador (instale com: pip install -r requirements.txt)
+Django>=5.2,<6.0
+openpyxl>=3.1
+xlrd>=2.0
+pdfplumber>=0.11
+pypdf>=4.0
+reportlab>=4.0
+whitenoise>=6.6
+waitress>=3.0
+python-dotenv>=1.0
+dj-database-url>=2.1
+segno>=1.6            # QR code da verificação em duas etapas do painel
+# Servidor Linux com PostgreSQL (Dockerfile / Coolify, se um dia for para uma VPS)
+gunicorn>=23.0
+psycopg[binary]>=3.2
+# Assistente do WhatsApp (IA opcional)
+anthropic>=1.11

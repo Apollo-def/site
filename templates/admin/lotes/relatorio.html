@@ -1,0 +1,119 @@
+{# Relatório comum dos envios em lote. Cada módulo estende e preenche os blocos (ver portal/admin_lotes.py). #}
+{% extends "admin/base_site.html" %}
+
+{% block extrahead %}{{ block.super }}
+  {% if em_andamento %}<meta http-equiv="refresh" content="2">{% endif %}
+{% endblock %}
+{% block extrastyle %}{{ block.super }}{% include "admin/lotes/_estilo.html" %}{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Início</a>
+  &rsaquo; <a href="{% url urls.lista %}">{{ opts.verbose_name_plural|capfirst }}</a>
+  &rsaquo; {{ lote }}
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+
+<p>
+  {% block cabecalho %}{% endblock %}
+  <strong>Enviado por</strong> {{ lote.enviado_por|default:"—" }} em {{ lote.enviado_em|date:"d/m/Y H:i" }}
+  · <a href="{{ lote.arquivo.url }}" target="_blank">ver PDF original</a>
+  {% block cabecalho_fim %}{% endblock %}
+</p>
+
+{% if em_andamento %}
+  <div class="cc-caixa">
+    <strong>{{ lote.get_status_display }}…</strong> página {{ lote.paginas_processadas }} de {{ lote.total_paginas|default:"?" }}
+    <div class="cc-barra"><div style="width: {{ lote.progresso }}%"></div></div>
+    <small>Esta tela se atualiza sozinha. Pode sair e voltar depois: o processamento continua.</small>
+  </div>
+{% elif lote.status == "erro" %}
+  <div class="cc-aviso cc-erro">{{ lote.mensagem_erro }}</div>
+  <form method="post" action="{% url urls.lote_reprocessar lote.pk %}">{% csrf_token %}
+    <input type="submit" value="Tentar processar de novo">
+  </form>
+{% elif lote.status == "substituido" %}
+  <div class="cc-aviso cc-amarelo">Este envio foi substituído por um envio mais novo da mesma competência.</div>
+{% endif %}
+
+{% if not em_andamento and lote.status != "erro" %}
+  {% if not pendentes and not avisos %}<div class="cc-aviso cc-ok">Tudo certo: todos os {{ rotulos.itens }} foram entregues.</div>{% endif %}
+
+  <div class="cc-cartoes">
+    <div class="cc-cartao"><strong>{{ lote.total_paginas }}</strong>páginas no PDF</div>
+    <div class="cc-cartao cc-verde"><strong>{{ lote.total_distribuidos }}</strong>{{ rotulos.itens }} entregues</div>
+    {% block cartoes_problemas %}{% endblock %}
+  </div>
+
+  {% for aviso in avisos %}<div class="cc-aviso cc-amarelo">{{ aviso }}</div>{% endfor %}
+
+  <h2 id="pendentes">Pendências para o RH resolver ({{ pendentes|length }})</h2>
+  {% if pendentes %}
+    <div class="cc-caixa">
+      <strong>Cadastrou os funcionários que faltavam?</strong> Clique abaixo para entregar de uma vez as páginas
+      {{ rotulos.chave }} agora existe no cadastro.
+      <form method="post" action="{% url urls.lote_reentregar lote.pk %}" style="margin-top:10px">{% csrf_token %}
+        <input type="submit" class="default" value="Entregar pendências agora" style="float:none">
+      </form>
+    </div>
+    <p>Estas páginas <strong>não foram entregues a ninguém</strong>. Abra a página, confira de quem é e informe a matrícula ou o CPF.
+       Se a página não for de nenhum funcionário ({{ rotulos.sem_dono }}), clique em “Não é de ninguém”.</p>
+    <table class="cc-tabela">
+      <thead><tr><th>Páginas</th><th>Motivo</th><th>Lido no PDF</th><th>Ver</th><th>Entregar para</th><th></th></tr></thead>
+      <tbody>
+      {% for p in pendentes %}
+        <tr>
+          <td>{{ p.paginas }}</td>
+          <td>{{ p.get_motivo_display }}</td>
+          <td>{% block lido_no_pdf %}{% endblock %}{% if p.nome_lido %}<br>{{ p.nome_lido }}{% endif %}</td>
+          <td><a href="{{ p.arquivo.url }}" target="_blank">abrir</a></td>
+          <td>
+            <form method="post" action="{% url urls.pendente_vincular p.pk %}" class="cc-inline">{% csrf_token %}
+              <input type="text" name="identificador" placeholder="Matrícula ou CPF" value="{% block sugestao %}{% endblock %}" required>
+              <input type="submit" value="Entregar">
+            </form>
+          </td>
+          <td>
+            <form method="post" action="{% url urls.pendente_descartar p.pk %}" class="cc-inline">{% csrf_token %}
+              <input type="submit" value="Não é de ninguém">
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>Nenhuma pendência.</p>
+  {% endif %}
+
+  {% if resolvidas %}
+    <details><summary>Pendências já resolvidas ({{ resolvidas|length }})</summary>
+      <ul>{% for p in resolvidas %}<li>Págs. {{ p.paginas }} → {% if p.funcionario %}{{ p.funcionario }}{% else %}não era de ninguém{% endif %} ({{ p.resolvida_por }}, {{ p.resolvida_em|date:"d/m/Y H:i" }})</li>{% endfor %}</ul>
+    </details>
+  {% endif %}
+
+  <h2>{{ rotulos.Itens }} entregues ({{ distribuidos|length }})</h2>
+  <table class="cc-tabela">
+    <thead><tr><th>Funcionário</th><th>Matrícula</th><th>Contrato</th><th>Páginas</th><th>Ver</th></tr></thead>
+    <tbody>
+    {% for c in distribuidos %}
+      <tr>
+        <td>{{ c.funcionario.nome_completo }}{% if c.vinculado_manualmente %} <small>(entregue manualmente)</small>{% endif %}</td>
+        <td>{{ c.funcionario.matricula }}</td>
+        <td>{{ c.funcionario.contrato }}</td>
+        <td>{{ c.paginas }}</td>
+        <td><a href="{{ c.arquivo.url }}" target="_blank">abrir</a></td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5">Nenhum.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+
+<p style="margin-top:24px"><a class="button" href="{% url urls.lote_enviar %}">Enviar outro PDF</a></p>
+</div>
+{% endblock %}

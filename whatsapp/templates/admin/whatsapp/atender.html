@@ -1,0 +1,40 @@
+{% extends "admin/base_site.html" %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Início</a>
+  &rsaquo; <a href="{% url 'admin:whatsapp_conversa_changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+  &rsaquo; {{ conversa }}
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <p>
+    {% if conversa.funcionario %}<strong>{{ conversa.funcionario.nome_completo }}</strong> · matrícula {{ conversa.funcionario.matricula }} · {{ conversa.funcionario.contrato }}<br>{% endif %}
+    Número {{ numero }} · situação: <strong>{{ conversa.get_estado_display }}</strong>
+    {% if conversa.simulada %} · <em>conversa do simulador</em>{% endif %}
+  </p>
+  {% if conversa.estado == "humano" %}
+    <p class="cc-aviso" style="background:#fff3cd;padding:10px 14px;border-radius:6px;max-width:700px">Esta conversa está com o RH desde {{ conversa.aguardando_humano_desde|date:"d/m/Y H:i" }}: o assistente não responde até você devolver.</p>
+  {% endif %}
+
+  {% include "admin/whatsapp/_conversa.html" %}
+
+  {% if pode_atender %}
+    <form method="post" style="max-width:720px;margin-top:14px">{% csrf_token %}
+      <label for="texto"><strong>Responder como RH</strong></label><br>
+      <textarea id="texto" name="texto" rows="3" style="width:100%;box-sizing:border-box" placeholder="Escreva a resposta. Ela chega no WhatsApp do funcionário."></textarea>
+      <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap">
+        <input type="submit" class="default" value="Enviar resposta" style="float:none">
+        {% if conversa.estado == "humano" %}<input type="submit" name="devolver" value="Encerrar e devolver ao assistente">{% endif %}
+      </div>
+      {% if not conversa.dentro_da_janela and not conversa.simulada %}
+        <p><small>O funcionário não escreve há mais de 24 h: a Meta só entrega pelo modelo de aviso aprovado.</small></p>
+      {% endif %}
+    </form>
+  {% else %}
+    <p><small>Você pode ler a conversa, mas não tem a permissão "Atender conversas do WhatsApp" para responder.</small></p>
+  {% endif %}
+</div>
+{% endblock %}

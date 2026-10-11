@@ -1,0 +1,76 @@
+{% extends "admin/base_site.html" %}
+
+{% block extrahead %}{{ block.super }}
+{% if modo_gateway and situacao.estado != "conectado" %}
+{# Enquanto não conecta, a página se atualiza sozinha para mostrar o QR code novo (ele troca a cada ~20 s). #}
+<meta http-equiv="refresh" content="8">
+{% endif %}
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Início</a>
+  &rsaquo; <a href="{% url 'admin:whatsapp_conversa_changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+  &rsaquo; Conexão
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main" style="max-width:820px">
+{% if modo_gateway %}
+  <p>O assistente está ligado a um WhatsApp pelo <strong>QR code</strong> (gateway do próprio portal).
+     <strong>Atenção:</strong> essa conexão não é oficial e o WhatsApp pode bloquear o número.
+     Use um <strong>chip secundário</strong>, nunca o número oficial da empresa.</p>
+
+  <div style="border:1px solid var(--hairline-color);border-radius:8px;padding:16px;margin:12px 0;text-align:center">
+  {% if erro_gateway or not situacao %}
+    <p style="font-size:16px">⚠️ <strong>O gateway está desligado.</strong></p>
+    <p>No PC servidor, rode <code>scripts\gateway_whatsapp.ps1</code> (ou reinicie a tarefa
+       <code>PortalWhatsApp</code>). Esta página se atualiza sozinha.</p>
+    {% if erro_gateway %}<p><small>{{ erro_gateway }}</small></p>{% endif %}
+  {% elif situacao.estado == "conectado" %}
+    <p style="font-size:16px">✅ <strong>Conectado</strong> no número {{ numero_conectado }}</p>
+    <form method="post" onsubmit="return confirm('Desconectar este WhatsApp? O assistente para de responder até alguém escanear um novo QR code.');">
+      {% csrf_token %}
+      <button type="submit" name="desconectar" class="button" style="background:#ba2121">Desconectar</button>
+    </form>
+  {% elif situacao.qr %}
+    <p style="font-size:16px"><strong>Escaneie com o celular do chip do assistente</strong></p>
+    <img src="{{ situacao.qr }}" alt="QR code do WhatsApp" width="300" height="300" style="background:#fff;padding:8px">
+    <p><small>No celular: WhatsApp › ⋮ (ou Configurações) › <strong>Dispositivos conectados</strong> ›
+       <strong>Conectar um dispositivo</strong>. O código muda a cada poucos segundos; a página acompanha.</small></p>
+  {% else %}
+    <p style="font-size:16px">⏳ {{ situacao.estado|default:"iniciando"|capfirst }}… aguarde alguns segundos.</p>
+  {% endif %}
+  </div>
+{% else %}
+  <p>O assistente usa a <strong>API oficial do WhatsApp (Meta)</strong>. Não existe QR Code nem celular ligado:
+     o número fica ligado à conta Meta Business da empresa e não desconecta. As chaves ficam no arquivo
+     <code>.env</code> do servidor, nunca no painel. Para conectar por QR code, use
+     <code>WHATSAPP_CANAL=gateway</code> no <code>.env</code>.</p>
+{% endif %}
+
+  <table>
+    <thead><tr><th>Item</th><th>Situação</th></tr></thead>
+    <tbody>
+    {% for nome, ok in itens %}
+      <tr><td>{{ nome }}</td><td>{% if ok %}✅ ok{% else %}— falta{% endif %}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+{% if not modo_gateway %}
+  <h2 style="margin-top:20px">Endereço do webhook (para colar no painel da Meta)</h2>
+  <p><code style="font-size:14px">{{ webhook }}</code></p>
+  <p><small>Precisa ser o link fixo com HTTPS (domínio próprio). O link temporário do ngrok muda e não serve.</small></p>
+{% endif %}
+
+  <h2 style="margin-top:20px">Números</h2>
+  <ul>
+    <li>Funcionários ativos com celular cadastrado: <strong>{{ celulares }}</strong> de {{ ativos }}</li>
+    <li>Funcionários que já conversaram com o assistente: <strong>{{ conversaram }}</strong></li>
+    <li>Última mensagem recebida: {% if ultima %}<strong>{{ ultima.criada_em|date:"d/m/Y H:i" }}</strong> (há {{ ultima.criada_em|timesince:agora }}){% else %}nenhuma ainda{% endif %}</li>
+  </ul>
+  <p><a class="button" href="{% url 'admin:whatsapp_simulador' %}">Abrir o simulador</a></p>
+</div>
+{% endblock %}

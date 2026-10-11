@@ -1,0 +1,13 @@
+{% extends "admin/lotes/relatorio.html" %}
+
+{% block cabecalho %}
+  <strong>Documento:</strong> {{ lote.get_tipo_display }} · <strong>Título para o funcionário:</strong> {{ lote.titulo }}<br>
+{% endblock %}
+
+{% block cartoes_problemas %}
+  <div class="cc-cartao cc-laranja"><strong>{{ lote.total_nao_encontrados }}</strong>CPFs não cadastrados ou com nome diferente</div>
+  <div class="cc-cartao cc-vermelho"><strong>{{ lote.total_sem_cpf }}</strong>páginas sem CPF identificado</div>
+{% endblock %}
+
+{% block lido_no_pdf %}{% if p.cpf_lido %}CPF {{ p.cpf_lido }}{% endif %}{% endblock %}
+{% block sugestao %}{{ p.cpf_lido }}{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "admin/base_site.html" %}
+
+{% block extrastyle %}{{ block.super }}{% include "admin/lotes/_estilo.html" %}{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Início</a>
+  &rsaquo; <a href="{% url 'admin:contracheques_lotecontracheque_changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+  &rsaquo; Enviar
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <div class="cc-caixa">
+    <p>Envie <strong>um único PDF</strong> com os contracheques de todos os funcionários. O sistema lê a
+       <strong>matrícula</strong> de cada página, separa e entrega a cada funcionário somente o contracheque dele.</p>
+
+    <form method="post" enctype="multipart/form-data" class="cc-form">
+      {% csrf_token %}
+      {% if form.non_field_errors %}<div class="cc-aviso cc-erro">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+      <p>{{ form.arquivo.errors }}<label for="{{ form.arquivo.id_for_label }}">{{ form.arquivo.label }}</label>{{ form.arquivo }}</p>
+      <div class="cc-linha">
+        <p>{{ form.mes.errors }}<label for="{{ form.mes.id_for_label }}">{{ form.mes.label }}</label>{{ form.mes }}</p>
+        <p>{{ form.ano.errors }}<label for="{{ form.ano.id_for_label }}">{{ form.ano.label }}</label>{{ form.ano }}</p>
+        <p>{{ form.tipo.errors }}<label for="{{ form.tipo.id_for_label }}">{{ form.tipo.label }}</label>{{ form.tipo }}</p>
+        <p>{{ form.contrato.errors }}<label for="{{ form.contrato.id_for_label }}">{{ form.contrato.label }}</label>{{ form.contrato }}</p>
+      </div>
+      {% if form.substituir.errors %}
+        <div class="cc-aviso cc-amarelo">{{ form.substituir.errors|join:" " }}</div>
+      {% endif %}
+      <p>{{ form.substituir }} <label for="{{ form.substituir.id_for_label }}" style="display:inline">{{ form.substituir.label }}</label></p>
+      <input type="submit" class="default" value="Enviar e separar" style="float:none">
+    </form>
+  </div>
+  <p><small>O sistema confere se o mês escrito no PDF bate com o mês informado e avisa se houver diferença.</small></p>
+</div>
+{% endblock %}

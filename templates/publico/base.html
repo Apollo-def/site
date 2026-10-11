@@ -1,0 +1,25 @@
+{% load static %}<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#0b2545">
+  <title>{% block titulo %}Portal do Colaborador{% endblock %} — Grupo Global</title>
+  <link rel="stylesheet" href="{% static 'css/publico.css' %}">
+  <link rel="icon" type="image/png" href="{% static 'img/favicon-32.png' %}">
+  <link rel="apple-touch-icon" href="{% static 'img/apple-touch-icon.png' %}">
+</head>
+<body>
+  <header class="topo">
+    <div class="topo-barra">
+      <a class="marca" href="{% url 'inicio' %}">
+        <span class="marca-logo">GG</span>
+        <span><strong>Portal do Colaborador</strong><small>Grupo Global · Globaltech Brasil</small></span>
+      </a>
+    </div>
+  </header>
+  <main class="pagina">{% block conteudo %}{% endblock %}</main>
+  <footer class="rodape">Seus dados são protegidos conforme a LGPD.</footer>
+</body>
+</html>
